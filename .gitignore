@@ -4,3 +4,4 @@ dist/
 .browser-test/
 test-results/
 *.zip
+outputs/
