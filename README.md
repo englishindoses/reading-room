@@ -47,6 +47,12 @@ All personal records stay in IndexedDB on the current browser and origin. Export
 
 Deploy `dist/` on a static HTTPS host. After changing any shipped code/content, change the asset-cache version in `sw.js` and update its asset list for new files. Test upgrades with populated data. Worker updates wait for **Update** and pending saves; migrations never reset IndexedDB. A PIN discourages casual profile access and is not encryption of the local database.
 
+## GitHub Pages hosting
+
+GitHub Pages is the intended PWA host. `.github/workflows/pages.yml` tests and builds the app, uploads only `dist/`, and deploys through the `github-pages` environment on pushes to `main` or manual workflow runs. All application, manifest, content, and service-worker URLs are relative so they work beneath `/reading-room/`.
+
+In the repository's **Settings → Pages**, select **GitHub Actions** as the source. The intended URL is `https://englishindoses.github.io/reading-room/`; it becomes usable only after Pages is enabled and deployment succeeds. The current private repository requires a GitHub plan supporting private-repository Pages, or explicit owner approval to make the repository public. The previous ChatGPT Sites deployment is not the intended host.
+
 ## Read in this order
 
 1. `PRODUCT_SPEC.md` — behaviour, navigation, requirements, defaults and non-goals.
