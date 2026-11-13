@@ -1,0 +1,59 @@
+{
+  "style": "Warm gouache storybook character portraits; original generated artwork, resized to 320px WebP for offline use.",
+  "avatars": [
+    {
+      "id": "character-1",
+      "prompt": "Create one polished illustrated profile avatar for a warm reading-practice app. SINGLE CHARACTER ONLY, square composition. A cheerful Black girl about 9 years old, deep brown skin, two rounded natural hair puffs with small golden hair ties, forest-green overalls over a honey-yellow shirt. Head and shoulders, front-facing, relaxed friendly smile, expressive natural facial features and clearly drawn eyes. Sophisticated contemporary storybook / gouache illustration with soft painterly shading, subtle texture, clean contours and rich warm colors; not emoji, not a flat geometric icon, not photorealistic, not 3D. Face large and centered, top of hair fully inside frame with generous 12% safe margin for circular cropping. Opaque solid pale peach background. No text, no letters, no border, no props, no extra faces. Designed to be recognizable at 48 pixels.",
+      "tool": "built-in image_gen",
+      "asset": "character-1.webp"
+    },
+    {
+      "id": "character-2",
+      "prompt": "Create ONE new illustrated profile avatar matching the reference image's sophisticated warm gouache storybook style, painterly texture, clean facial detail and framing. Reference is STYLE ONLY; create a clearly different person. Subject: A cheerful East Asian boy about 10 years old, warm light skin, straight dark hair with a slightly tousled fringe, round teal eyeglasses, a terracotta sweatshirt. Pale sage background. Head and shoulders, front-facing, natural friendly smile, face large and centered, clearly drawn expressive eyes. Square image, opaque plain background in the specified color, no text, no border, no props, no extra faces, not emoji, not flat icon, not photorealistic, not 3D. Keep complete hair/head covering inside frame with 12 percent safe margin for circular crop. Recognizable at 48 pixels; suitable for a welcoming reading app used by all ages.",
+      "tool": "built-in image_gen",
+      "asset": "character-2.webp"
+    },
+    {
+      "id": "character-3",
+      "prompt": "Create ONE new illustrated profile avatar matching the reference image's sophisticated warm gouache storybook style, painterly texture, clean facial detail and framing. Reference is STYLE ONLY; create a clearly different person. Subject: A cheerful child about 8 years old with light freckled skin, short curly ginger hair, a blue denim shirt over a cream T-shirt, gender-neutral friendly look. Pale honey-yellow background. Head and shoulders, front-facing, natural friendly smile, face large and centered, clearly drawn expressive eyes. Square image, opaque plain background in the specified color, no text, no border, no props, no extra faces, not emoji, not flat icon, not photorealistic, not 3D. Keep complete hair/head covering inside frame with 12 percent safe margin for circular crop. Recognizable at 48 pixels; suitable for a welcoming reading app used by all ages.",
+      "tool": "built-in image_gen",
+      "asset": "character-3.webp"
+    },
+    {
+      "id": "character-4",
+      "prompt": "Create ONE new illustrated profile avatar matching the reference image's sophisticated warm gouache storybook style, painterly texture, clean facial detail and framing. Reference is STYLE ONLY; create a clearly different person. Subject: A smiling teenage girl about 16 years old, medium olive skin, a softly draped muted plum hijab, a forest-green casual top. Pale peach background. Head and shoulders, front-facing, natural friendly smile, face large and centered, clearly drawn expressive eyes. Square image, opaque plain background in the specified color, no text, no border, no props, no extra faces, not emoji, not flat icon, not photorealistic, not 3D. Keep complete hair/head covering inside frame with 12 percent safe margin for circular crop. Recognizable at 48 pixels; suitable for a welcoming reading app used by all ages.",
+      "tool": "built-in image_gen",
+      "asset": "character-4.webp"
+    },
+    {
+      "id": "character-5",
+      "prompt": "Create ONE new illustrated profile avatar matching the reference image's sophisticated warm gouache storybook style, painterly texture, clean facial detail and framing. Reference is STYLE ONLY; create a clearly different person. Subject: A friendly teenage boy about 17 years old, medium-brown South Asian skin, thick wavy dark hair swept slightly to one side, a muted blue hoodie over a cream shirt. Pale honey-yellow background. Head and shoulders, front-facing, natural friendly smile, face large and centered, clearly drawn expressive eyes. Square image, opaque plain background in the specified color, no text, no border, no props, no extra faces, not emoji, not flat icon, not photorealistic, not 3D. Keep complete hair inside frame with 12 percent safe margin for circular crop. Recognizable at 48 pixels; suitable for a welcoming reading app used by all ages.",
+      "tool": "built-in image_gen",
+      "asset": "character-5.webp"
+    },
+    {
+      "id": "character-6",
+      "prompt": "Create ONE new illustrated profile avatar matching the reference image's sophisticated warm gouache storybook style, painterly texture, clean facial detail and framing. Reference is STYLE ONLY; create a clearly different person. Subject: A friendly teenager about 15 years old with warm tan skin, short dark curly hair with a subtle undercut, small round glasses, a mustard cardigan over a muted plum shirt, relaxed gender-neutral androgynous look. Pale sage background. Head and shoulders, front-facing, natural friendly smile, face large and centered, clearly drawn expressive eyes. Square image, opaque plain background in the specified color, no text, no border, no props, no extra faces, not emoji, not flat icon, not photorealistic, not 3D. Keep complete hair inside frame with 12 percent safe margin for circular crop. Recognizable at 48 pixels; suitable for a welcoming reading app used by all ages.",
+      "tool": "built-in image_gen",
+      "asset": "character-6.webp"
+    },
+    {
+      "id": "character-7",
+      "prompt": "Create ONE new illustrated profile avatar matching the reference image's sophisticated warm gouache storybook style, painterly texture, clean facial detail and framing. Reference is STYLE ONLY; create a clearly different person. Subject: A warm smiling adult woman in her late 30s, medium-deep brown skin, shoulder-length loose dark curls, small gold stud earrings, a terracotta knit top. Pale sage background. Head and shoulders, front-facing, natural friendly smile, face large and centered, clearly drawn expressive eyes. Square image, opaque plain background in the specified color, no text, no border, no props, no extra faces, not emoji, not flat icon, not photorealistic, not 3D. Keep complete hair inside frame with 12 percent safe margin for circular crop. Recognizable at 48 pixels; suitable for a welcoming reading app used by all ages.",
+      "tool": "built-in image_gen",
+      "asset": "character-7.webp"
+    },
+    {
+      "id": "character-8",
+      "prompt": "Create ONE new illustrated profile avatar matching the reference image's sophisticated warm gouache storybook style, painterly texture, clean facial detail and framing. Reference is STYLE ONLY; create a clearly different person. Subject: A kind older East Asian man about 65 years old, warm light skin with natural age lines, neatly swept silver-gray hair, rounded dark glasses, forest-green cardigan over a cream collared shirt. Pale honey-yellow background. Clearly an older adult, dignified and approachable. Head and shoulders, front-facing, natural friendly smile, face large and centered, clearly drawn expressive eyes. Square image, opaque plain background in the specified color, no text, no border, no props, no extra faces, not emoji, not flat icon, not photorealistic, not 3D. Keep complete hair inside frame with 12 percent safe margin for circular crop. Recognizable at 48 pixels; suitable for a welcoming reading app used by all ages.",
+      "tool": "built-in image_gen",
+      "asset": "character-8.webp"
+    },
+    {
+      "id": "character-9",
+      "prompt": "Create ONE new illustrated profile avatar matching the reference image's sophisticated warm gouache storybook style, painterly texture, clean facial detail and framing. Reference is STYLE ONLY; create a clearly different person. Subject: A warm smiling older white woman about 65 years old, fair freckled skin and natural age lines, short silver pixie-cut hair, a terracotta scarf over a muted teal blouse. Pale peach background. Clearly an older adult, lively, dignified and approachable. Head and shoulders, front-facing, natural friendly smile, face large and centered, clearly drawn expressive eyes. Square image, opaque plain background in the specified color, no text, no border, no props, no extra faces, not emoji, not flat icon, not photorealistic, not 3D. Keep complete hair inside frame with 12 percent safe margin for circular crop. Recognizable at 48 pixels; suitable for a welcoming reading app used by all ages.",
+      "tool": "built-in image_gen",
+      "asset": "character-9.webp"
+    }
+  ]
+}

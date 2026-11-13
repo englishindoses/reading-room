@@ -187,6 +187,8 @@ Controls use 8px corners, reading and continuation panels 12px, and dialogs 14px
 
 ## Components
 
+Profile avatars use nine original gouache character portraits, from children to older adults. The picker is a three-column grid with 12px gaps, 12px option corners, and 72px circular portraits (64px and 8px gaps below 360px). Each option has a name and localized screen-reader description. Selection uses an accent border, tinted background, and checkmark; keyboard focus remains visible. Any profile may choose any portrait. Header, navigation, profile, and switcher reuse the selected image; uploaded photos remain supported.
+
 Buttons have a 44px minimum height, 600 weight, and 9px content gap. Primary hover deepens the accent; ordinary hover uses tint. Disabled controls have .45 opacity. Keyboard focus uses a 3px amber outline offset by 4px. Fields have a 1px `line` border and 46px minimum height.
 
 Book cards pair a cover with title, compact metadata, sample badge, and collection action. Cover hover scales to 1.025 over .2s. Answer options use bordered rows with 8px corners, at least 48px tall, and show checked state with tint, an accent border, and a 1px inset accent stroke. Options have 14px padding.

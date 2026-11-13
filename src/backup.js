@@ -1,3 +1,5 @@
+import { avatarChoices, legacyAvatarIds } from './avatars.js';
+const validAvatarIds = new Set([...legacyAvatarIds, ...avatarChoices.map(a => a.id)]);
 const arrays = ['readingProgress', 'activityAttempts', 'collections'];
 const plain = value => value && typeof value === 'object' && !Array.isArray(value);
 const text = (v, max = 200) => typeof v === 'string' && v.length > 0 && v.length <= max;
@@ -10,7 +12,7 @@ export function validateBackup(input) {
   for (const entry of input.profiles) {
     const p = entry?.profile;
     if (!plain(p) || !text(p.profileId) || !text(p.name, 80) || !['kids', 'teens', 'adults'].includes(p.audience) || !plain(entry.preferences)) throw new Error('A profile is invalid. No data has been changed.');
-    if (p.avatar && !['leaf', 'sun', 'moon', 'flower'].includes(p.avatar) && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(p.avatar)) throw new Error('Invalid avatar image.');
+    if (p.avatar && !validAvatarIds.has(p.avatar) && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(p.avatar)) throw new Error('Invalid avatar image.');
     if (p.pin && (!plain(p.pin) || !text(p.pin.salt) || !/^[a-f0-9]{64}$/.test(p.pin.hash))) throw new Error('Invalid PIN metadata.');
     if (!['en', 'pt-BR'].includes(entry.preferences.language) || !['system', 'book', 'flip', 'none'].includes(entry.preferences.animation) || !Number.isInteger(entry.preferences.level) || entry.preferences.level < 1 || entry.preferences.level > 99 || (entry.preferences.filters && !plain(entry.preferences.filters))) throw new Error('Invalid profile preferences.');
     for (const key of arrays) if (!Array.isArray(entry[key]) || entry[key].length > 50000 || entry[key].some(r => !plain(r) || r.profileId !== p.profileId)) throw new Error(`Invalid ${key} records.`);

@@ -4,6 +4,7 @@ import { loadCatalogue, checkAnswer, activityTypes } from './content.js';
 import { icon } from './icons.js';
 import { t, setLocale } from './i18n.js';
 import { renderContentPage } from './pages.js';
+import { avatarChoices, avatarImage, defaultAvatar, resolveAvatarId } from './avatars.js';
 
 const $ = (q, root = document) => root.querySelector(q);
 const $$ = (q, root = document) => [...root.querySelectorAll(q)];
@@ -18,7 +19,7 @@ let waitingWorker;
 let backupPreview;
 const main = $('#main');
 const dialog = $('#dialog');
-const avatar = (p, large = false) => `<span class="avatar${large ? ' large' : ''}">${p?.avatar?.startsWith('data:image/') ? `<img src="${e(p.avatar)}" alt="">` : icon(p?.avatar || 'leaf')}</span>`;
+const avatar = (p, large = false) => `<span class="avatar${large ? ' large' : ''}"><img src="${e(p?.avatar?.startsWith('data:image/') ? p.avatar : avatarImage(p?.avatar))}" alt="" width="320" height="320"></span>`;
 const button = (label, action, cls = 'secondary', extra = '') => `<button class="${cls}" data-action="${action}" ${extra}>${t(label)}</button>`;
 const statusLabel = value => t({ 'in-progress': 'In progress', finished: 'Finished' }[value] || 'Not started');
 const profile = () => state.profile;
@@ -85,9 +86,10 @@ function render() {
 
 function profileForm(edit = false) {
   const p = edit ? profile() : null;
+  const selectedAvatar = p?.avatar?.startsWith('data:') ? null : resolveAvatarId(p?.avatar || defaultAvatar(p?.audience || 'adults'));
   return `<div class="form-panel">${edit ? backButton('settings') : state.profiles.length ? backButton('profiles') : ''}<div class="welcome">${!edit ? `<span class="brand-mark">${icon('book')}</span>` : ''}<h1 class="serif">${t(edit ? 'Edit profile' : 'A little reading. A world to discover.')}</h1><p class="muted">${t(edit ? 'Your profile stays on this device. No account needed.' : 'Your reading journey starts here.')}</p></div><form id="profile-form" class="stack" data-edit="${edit}">
     ${field('Your name', `<input name="name" required maxlength="80" autocomplete="given-name" value="${e(p?.name || '')}">`)}
-    <fieldset class="avatar-field" style="border:0;padding:0;margin:0"><legend class="small" style="font-weight:600;margin-bottom:10px">${t('Choose an avatar')}</legend><div class="avatar-options">${['leaf','sun','moon','flower'].map(v => `<label class="avatar-choice"><input type="radio" name="avatar" value="${v}" ${(!p || p.avatar === v || (p.avatar?.startsWith('data:') && v === 'leaf')) && v === (p?.avatar?.startsWith('data:') ? 'leaf' : p?.avatar || 'leaf') ? 'checked' : ''} aria-label="${v}"><span class="avatar">${icon(v)}</span></label>`).join('')}</div></fieldset>
+    <fieldset class="avatar-field"><legend>${t('Choose an avatar')}</legend><div class="avatar-options">${avatarChoices.map(a => `<label class="avatar-choice"><input type="radio" name="avatar" value="${a.id}" ${selectedAvatar === a.id ? 'checked' : ''} aria-label="${e(a.name)} — ${e(t(a.description))}"><span class="avatar"><img src="${avatarImage(a.id)}" alt="" width="320" height="320"></span><span class="avatar-choice-name">${a.name}</span><span class="avatar-choice-check" aria-hidden="true">${icon('check')}</span></label>`).join('')}</div></fieldset>
     ${p?.avatar?.startsWith('data:') ? `<div class="row">${avatar(p)}<span class="small muted">${t('Upload photo')}</span></div>` : ''}
     ${field('Upload photo', '<input name="photo" type="file" accept="image/png,image/jpeg,image/webp">')}
     ${field('Audience', `<select name="audience">${[['kids','Kids'],['teens','Teens'],['adults','Adults']].map(([v,l])=>option(v,l,p?.audience || 'adults')).join('')}</select>`)}
@@ -226,7 +228,7 @@ async function submitProfile(form) {
   p.name=name; p.audience=data.get('audience'); p.preferences.level=Number(data.get('level'));
   if (editing && p.audience !== profile().audience) p.preferences.filters.audience=p.audience;
   const photo = data.get('photo');
-  p.avatar = photo?.size ? await readPhoto(photo) : editing && p.avatar.startsWith('data:') && !state.avatarChanged ? p.avatar : data.get('avatar') || 'leaf';
+  p.avatar = photo?.size ? await readPhoto(photo) : editing && p.avatar.startsWith('data:') && !state.avatarChanged ? p.avatar : data.get('avatar') || defaultAvatar(p.audience);
   if (data.get('removePin')) delete p.pin;
   if (data.get('pin')) p.pin=await hashPin(data.get('pin'));
   await saveProfile(p);

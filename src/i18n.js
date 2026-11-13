@@ -1,4 +1,13 @@
 export const pt = {
+  'Girl with natural hair puffs': 'Menina com cabelos crespos em dois coques',
+  'Boy with round teal glasses': 'Menino com óculos redondos verdes',
+  'Child with ginger curls and freckles': 'Criança ruiva com cachos e sardas',
+  'Teen with a plum headscarf': 'Adolescente com lenço ameixa',
+  'Teen with wavy hair and a blue hoodie': 'Adolescente com cabelo ondulado e moletom azul',
+  'Teen with curls, glasses and a honey cardigan': 'Adolescente com cachos, óculos e cardigã amarelo',
+  'Woman with dark curls and a terracotta top': 'Mulher com cachos escuros e blusa terracota',
+  'Older man with silver hair and glasses': 'Senhor com cabelos grisalhos e óculos',
+  'Older woman with silver hair and a warm scarf': 'Senhora com cabelos grisalhos e cachecol',
   'Audio transcript': 'Transcrição do áudio', 'Audio playback is unavailable in this browser.': 'A reprodução de áudio não está disponível neste navegador.', 'This page needs a newer app version. Your progress has been kept.': 'Esta página precisa de uma versão mais recente do aplicativo. Seu progresso foi mantido.',
   'Reading Room': 'Sala de Leitura', 'Library': 'Biblioteca', 'My Collections': 'Minhas coleções', 'My Profile': 'Meu perfil',
   'A little reading. A world to discover.': 'Uma pequena leitura. Um mundo para descobrir.',

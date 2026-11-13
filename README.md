@@ -36,6 +36,7 @@ After **Ready offline** appears, disconnect and reload to use bundled stories an
 - `src/db.js`: IndexedDB and additive migrations; `src/backup.js`: backup validation and conflict planning.
 - `src/content.js`: package loader, supported activity registry, and authored-answer scoring.
 - `src/pages.js`: extensible story, intro, image, audio, and mixed page renderers.
+- `src/avatars.js`: nine character identities, labels, and compatibility mapping for older icon avatars; `assets/avatars/`: offline portrait images and the generation prompt set.
 - `src/i18n.js`: English/Brazilian Portuguese UI dictionary; book text remains as authored.
 - `src/styles.css`: responsive layouts and shared Kids/Teens/Adults theme tokens.
 - `content/catalogue.json`: book registry; each folder contains its `book.json` and cover asset.

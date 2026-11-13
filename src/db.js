@@ -1,3 +1,4 @@
+import { defaultAvatar } from './avatars.js';
 export const DB_NAME = 'reading-app';
 export const DB_VERSION = 2;
 let connection;
@@ -48,7 +49,7 @@ export function saveProfile(profile) { return writeRecords([{ store: 'profiles',
 export function saveLastProfile(profileId) { return writeRecords([{ store: 'appMeta', value: { key: 'lastProfile', value: profileId } }]); }
 export const id = () => crypto.randomUUID();
 export function newProfile(name, audience = 'adults') {
-  return { profileId: id(), name, audience, avatar: 'leaf', createdAt: new Date().toISOString(), preferences: { language: 'en', animation: 'system', level: 1, filters: {} }, readingProgress: [], activityAttempts: [], collections: [] };
+  return { profileId: id(), name, audience, avatar: defaultAvatar(audience), createdAt: new Date().toISOString(), preferences: { language: 'en', animation: 'system', level: 1, filters: {} }, readingProgress: [], activityAttempts: [], collections: [] };
 }
 export async function hashPin(pin, salt = id()) {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);

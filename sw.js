@@ -1,8 +1,11 @@
-const VERSION = 'reading-room-assets-v2-warm';
+const VERSION = 'reading-room-assets-v3-characters';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
-  './src/app.js', './src/db.js', './src/backup.js', './src/content.js', './src/pages.js', './src/icons.js', './src/i18n.js', './src/styles.css',
+  './src/app.js', './src/db.js', './src/backup.js', './src/content.js', './src/pages.js', './src/icons.js', './src/i18n.js', './src/styles.css', './src/avatars.js',
+  './assets/avatars/character-1.webp', './assets/avatars/character-2.webp', './assets/avatars/character-3.webp',
+  './assets/avatars/character-4.webp', './assets/avatars/character-5.webp', './assets/avatars/character-6.webp',
+  './assets/avatars/character-7.webp', './assets/avatars/character-8.webp', './assets/avatars/character-9.webp',
   './content/catalogue.json', './content/the-red-bag/book.json', './content/the-red-bag/cover.svg', './content/a-day-at-the-pond/book.json', './content/a-day-at-the-pond/cover.svg'
 ];
 self.addEventListener('install', event => {
