@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-12T00:00:00Z",
+  "title": "Design System: Reading Room",
+  "extensions": {
+    "colorMeta": {
+      "accent": { "role": "primary", "displayName": "Deep library green" },
+      "paper": { "role": "neutral", "displayName": "Warm cream" },
+      "kids-accent": { "role": "primary", "displayName": "Kids ochre brown" },
+      "teens-accent": { "role": "primary", "displayName": "Teens muted violet" }
+    },
+    "typographyMeta": {
+      "reading": { "displayName": "Story text", "purpose": "Comfortable serif text, 40ch maximum; 1.6rem from 600px." }
+    },
+    "shadows": [
+      { "name": "paper", "value": "0 12px 36px #233c3315", "purpose": "Reader paper, navigation handle, toast." },
+      { "name": "cover", "value": "3px 7px 15px #213d321f", "purpose": "Book covers." },
+      { "name": "dialog", "value": "0 24px 80px #142d3340", "purpose": "Modal dialogs." }
+    ],
+    "motion": [
+      { "name": "control", "value": "background .16s, color .16s", "purpose": "Button state transitions." },
+      { "name": "cover", "value": "transform .2s", "purpose": "Cover hover scale(1.025)." },
+      { "name": "simple-turn", "value": ".22s cubic-bezier(.16,1,.3,1)", "purpose": "Opacity .6 and translateX(12px) to full visibility and zero translation." },
+      { "name": "book-turn", "value": ".42s cubic-bezier(.16,1,.3,1)", "purpose": "Left-origin perspective(1200px) rotateY(-12deg) to zero and brightness .9 to 1." }
+    ],
+    "breakpoints": [
+      { "name": "compact-max", "value": "359px" },
+      { "name": "medium-min", "value": "600px" },
+      { "name": "wide-min", "value": "960px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Collapsed reader dock",
+      "kind": "nav",
+      "description": "Save status and navigation handle share one centered row at all widths; page index and main links appear on expansion.",
+      "html": "<nav class=\"ds-dock\" aria-label=\"Reading navigation\"><p class=\"ds-save\" role=\"status\">Saved on this device</p><button class=\"ds-handle\" aria-expanded=\"false\">Open navigation</button></nav>",
+      "css": ".ds-dock{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));font-family:'Segoe UI',system-ui,sans-serif}.ds-save{margin:0;width:auto;max-width:45%;padding:4px 10px;background:var(--surface,#fffefb);border-radius:6px;color:var(--muted,#5e6c63);font-size:.75rem;line-height:1.5;text-align:center}.ds-handle{margin:0;display:flex;align-items:center;justify-content:center;gap:9px;min-height:40px;padding:10px 16px;border:1px solid var(--line,#d8ddd1);border-radius:8px;background:var(--surface,#fffefb);color:var(--ink,#243b34);font:600 .75rem/1.5 'Segoe UI',system-ui,sans-serif;box-shadow:0 12px 36px #233c3315;cursor:pointer;transition:background .16s,color .16s}.ds-handle:hover{background:var(--tint,#e7ede3)}.ds-handle:focus-visible{outline:3px solid #b97428;outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-handle{transition:none}}"
+    },
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action with shared focus and disabled treatment.",
+      "html": "<button class=\"ds-primary\">Start reading</button>",
+      "css": ".ds-primary{font:600 16px/1.5 'Segoe UI',system-ui,sans-serif;min-height:44px;padding:10px 16px;border:1px solid transparent;border-radius:8px;background:var(--accent,#254e43);color:#fff;cursor:pointer;transition:background .16s,color .16s}.ds-primary:hover:not(:disabled){background:var(--accent-hover,#193a31)}.ds-primary:focus-visible{outline:3px solid #b97428;outline-offset:4px}.ds-primary:disabled{opacity:.45;cursor:default}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
+    },
+    {
+      "name": "Reading paper",
+      "kind": "card",
+      "refersTo": "reader-paper",
+      "description": "Serif reading surface with responsive padding.",
+      "html": "<article class=\"ds-paper\"><div class=\"ds-rule\"></div><h1>A quiet morning</h1><p>The room was warm.<br>A book waited on the table.</p></article>",
+      "css": ".ds-paper{background:var(--surface,#fffefb);color:var(--ink,#243b34);padding:28px 22px;border-radius:12px;box-shadow:0 12px 36px #233c3315;min-height:410px}.ds-paper h1{font:400 2rem/1.15 Georgia,serif;letter-spacing:-.035em;margin:12px 0 30px}.ds-paper p{font:1.35rem/2 Georgia,'Times New Roman',serif;max-width:40ch;white-space:pre-line}.ds-rule{width:42px;height:2px;background:var(--warm,#a44632);margin:6px 0 26px}@media(min-width:600px){.ds-paper{padding:42px 48px;min-height:460px}.ds-paper h1{font-size:2.5rem}.ds-paper p{font-size:1.6rem}}@media(min-width:960px){.ds-paper{padding:48px 64px}}"
+    },
+    {
+      "name": "Answer option",
+      "kind": "input",
+      "description": "Native radio option with selected and keyboard focus states.",
+      "html": "<label class=\"ds-answer\"><input type=\"radio\" name=\"ds-answer\" checked>In the reading room</label>",
+      "css": ".ds-answer{display:flex;align-items:center;gap:12px;border:1px solid var(--line,#d8ddd1);border-radius:8px;padding:12px;min-height:48px;font:.95rem/1.5 'Segoe UI',system-ui,sans-serif;color:var(--ink,#243b34);cursor:pointer}.ds-answer input{width:19px;height:19px;accent-color:var(--accent,#254e43)}.ds-answer:has(input:checked){background:var(--tint,#e7ede3);border-color:var(--accent,#254e43)}.ds-answer input:focus-visible{outline:3px solid #b97428;outline-offset:4px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Warm cream and deep-green library",
+    "overview": "A quiet, approachable library with comfortable serif reading and familiar system sans controls. Kids, Teens, and Adults share functionality with distinct warm brown, muted violet, and deep-green palettes.",
+    "keyCharacteristics": ["Open book compositions", "Comfortable serif reading", "Fixed bottom navigation", "Distinct audience palettes"],
+    "rules": [{ "name": "Audience themes", "body": "Change audience palettes while preserving shared layout and functionality.", "section": "colors" }],
+    "dos": ["Do preserve keyboard focus visibility.", "Do keep collapsed save feedback alongside the reader handle with an 8px gap and 45% maximum width.", "Do disable motion for prefers-reduced-motion."],
+    "donts": ["Don't replace bottom navigation with a desktop-only pattern.", "Don't box every book into a raised card."]
+  }
+}

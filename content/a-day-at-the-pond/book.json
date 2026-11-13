@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1, "id": "sample-pond", "contentVersion": 1,
+  "title": "A Day at the Pond", "subtitle": "There is a lot to notice",
+  "description": "A quiet pond, a busy duck, and a surprise in the reeds. Get ready, read a short story, then try a few activities.",
+  "readingLevel": 1, "audiences": ["kids", "teens", "adults"], "categories": ["Nature"], "seriesId": "Small stories", "sample": true,
+  "cover": "./cover.svg", "color": "#356c6a", "minutes": 6,
+  "pages": [
+    { "id": "before-01", "type": "intro", "title": "Before you read", "text": "Think of a pond.\nWhat might you see there?\n\nLook out for these words in the story:\npond · duck · reeds · frog", "note": "Take your time. You don’t need to write an answer here." },
+    { "id": "story-01", "type": "story", "title": "At the pond", "text": "Ben and Nan sit by the pond.\nA duck dips its head in the water.\n“Look at that!” says Ben.\nThe duck pops back up." },
+    { "id": "story-02", "type": "story", "title": "A sound in the reeds", "text": "A frog sits in the reeds.\nIt hops onto a rock.\nBen is still. Nan is still.\nThey watch the frog hop back in." },
+    { "id": "true-01", "type": "activity", "activityType": "true-false", "title": "True or false?", "instructions": "Decide whether each sentence matches the story.", "questions": [
+      { "id": "duck", "prompt": "The duck dips its head in the water.", "options": ["True", "False"], "answer": "True", "hint": "Look at what the duck does on the first story page." },
+      { "id": "frog", "prompt": "The frog sits in a bag.", "options": ["True", "False"], "answer": "False", "hint": "Find the frog at the start of the second story page." }
+    ] },
+    { "id": "match-01", "type": "activity", "activityType": "matching", "title": "Make a match", "instructions": "Match each animal to what it does in the story.", "questions": [
+      { "id": "duck", "prompt": "The duck…", "options": ["dips its head", "hops onto a rock"], "answer": "dips its head", "hint": "Read the first story page." },
+      { "id": "frog", "prompt": "The frog…", "options": ["dips its head", "hops onto a rock"], "answer": "hops onto a rock", "hint": "Read the second story page." }
+    ] },
+    { "id": "select-01", "type": "activity", "activityType": "select-gap", "title": "Complete the sentence", "instructions": "Choose the word that fits.", "questions": [
+      { "id": "place", "prompt": "Ben and Nan sit by the ___.", "options": ["pond", "shop", "bus"], "answer": "pond", "hint": "The title gives you a clue." }
+    ] },
+    { "id": "order-01", "type": "activity", "activityType": "drag-drop", "title": "Put the story in order", "instructions": "Drag a sentence to its place, or use each numbered menu. Start with what happens first.", "questions": [
+      { "id": "first", "prompt": "1. First", "options": ["Ben and Nan sit by the pond.", "The duck dips its head.", "The frog hops onto a rock."], "answer": "Ben and Nan sit by the pond.", "hint": "How does the first story page begin?" },
+      { "id": "next", "prompt": "2. Next", "options": ["Ben and Nan sit by the pond.", "The duck dips its head.", "The frog hops onto a rock."], "answer": "The duck dips its head.", "hint": "The duck comes before the frog." },
+      { "id": "last", "prompt": "3. Last", "options": ["Ben and Nan sit by the pond.", "The duck dips its head.", "The frog hops onto a rock."], "answer": "The frog hops onto a rock.", "hint": "The frog is on the second story page." }
+    ] }
+  ]
+}
