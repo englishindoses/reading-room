@@ -85,7 +85,7 @@ try {
   await test('service-worker update waits for user action and retains saved answers',async()=>{
     await route('library');
     const before=await evaluate(`(async()=>{const db=await import('./src/db.js');return JSON.stringify(await db.readAll('profiles'));})()`);
-    await writeFile('sw.js',originalWorker.replace('reading-room-assets-v1','reading-room-assets-browser-upgrade'));
+    await writeFile('sw.js',originalWorker.replace(/reading-room-assets-[^']+/, 'reading-room-assets-browser-upgrade'));
     await evaluate(`(async()=>{const registration=await navigator.serviceWorker.getRegistration();await registration.update();})()`);
     await until(`!!document.querySelector('[data-action=update]')`,20000);
     assert.equal(await evaluate(`navigator.serviceWorker.controller.scriptURL.endsWith('/sw.js')`),true);

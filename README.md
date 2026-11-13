@@ -17,6 +17,7 @@ Open **http://localhost:4173** and create a profile. On Windows, use `npm.cmd` i
 ```sh
 npm test            # backup, merge, content and scoring tests
 npm run test:browser # Chrome browser checks; start the dev server first
+npm run test:design  # responsive screens and contrast across audience themes
 npm run build       # creates the static app in dist/
 node scripts/server.mjs --dist # serve the generated app
 ```
@@ -51,7 +52,7 @@ Deploy `dist/` on a static HTTPS host. After changing any shipped code/content, 
 
 GitHub Pages is the intended PWA host. `.github/workflows/pages.yml` tests and builds the app, uploads only `dist/`, and deploys through the `github-pages` environment on pushes to `main` or manual workflow runs. All application, manifest, content, and service-worker URLs are relative so they work beneath `/reading-room/`.
 
-In the repository's **Settings → Pages**, select **GitHub Actions** as the source. The intended URL is `https://englishindoses.github.io/reading-room/`; it becomes usable only after Pages is enabled and deployment succeeds. The current private repository requires a GitHub plan supporting private-repository Pages, or explicit owner approval to make the repository public. The previous ChatGPT Sites deployment is not the intended host.
+The public repository deploys to **https://englishindoses.github.io/reading-room/**. GitHub Pages uses **GitHub Actions** as its source. Future successful pushes to `main` publish automatically. GitHub Pages is the PWA host; the earlier ChatGPT Sites deployment is not used for releases.
 
 ## Read in this order
 

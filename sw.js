@@ -1,4 +1,4 @@
-const VERSION = 'reading-room-assets-v1';
+const VERSION = 'reading-room-assets-v2-warm';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',

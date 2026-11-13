@@ -10,7 +10,8 @@ The two bundled sample packages demonstrate story-first and pre-reading → stor
 
 - Eight Node tests: backup round trip, malformed/unsafe/version rejection, identity rewriting, idempotent merge, explicit answer/collection conflicts, authored normalization, and sample package integrity.
 - Twenty-one headless Chrome checks: first launch, complete offline cache, no horizontal overflow at 320/390/768/1366px, persisted answers/pages, resume, retry history, completion, collections, profile isolation, translation, three import strategies, populated v1→v2 migration, aborted upgrade rollback, offline cold reload, reader layouts, six activity renderers, atomic transaction abort, import preview, invalid import, PIN lifecycle, and actual waiting service-worker upgrade preserving profiles.
-- Screenshots inspected at phone and laptop widths, including reader screens. Mechanical design detector: no findings.
+- Screenshots inspected at phone and laptop widths, including onboarding, filters, profile, activity feedback, and reader screens. The warmer palette was reviewed after the appearance update. Mechanical detector reports advisory documentation differences for legacy/less-common type and radius declarations; no blocking findings.
+- `npm run test:design` checks contrast of the main text/feature/navigation pairs in all three audience themes (at least 4.5:1), phone layouts, Portuguese at 320px, and key screen states.
 
 Run `npm test`, start `npm run dev`, then run `npm run test:browser`. Results are generated in `test-results/browser.json`; screenshots are in `.impeccable/review/`. The browser suite uses fixture profiles in its own isolated browser, never a user's real browser profile.
 
