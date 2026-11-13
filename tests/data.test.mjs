@@ -15,7 +15,7 @@ test('merge is idempotent and preserves distinct attempts and collections',()=>{
 test('conflicting answers require an explicit resolution and leave inputs intact',()=>{const a=fixture(),b=fixture();b.activityAttempts[0].answers['bag-color']='Blue';const result=mergeProfiles(a,b);assert.equal(result.conflicts.length,1);const key=result.conflicts[0].key;const resolved=mergeProfiles(a,b,{[key]:'incoming'});assert.equal(resolved.profile.activityAttempts[0].answers['bag-color'],'Blue');assert.equal(a.activityAttempts[0].answers['bag-color'],'Red');});
 test('same-name collections with different identities are reviewed',()=>{const a=fixture(),b=fixture();b.collections[0].collectionId='different';b.collections[0].bookIds=['sample-pond'];assert.equal(mergeProfiles(a,b).conflicts.length,1);});
 test('typed answers normalize only when authored; blanks never score',()=>{const q={answer:'pen',normalization:{trim:true,caseInsensitive:true}};assert.equal(checkAnswer(q,' PEN '),true);assert.equal(checkAnswer(q,'pin'),false);assert.equal(checkAnswer(q,''),false);assert.equal(checkAnswer({answer:'pen'},'Pen'),false);});
-test('sample packages have stable unique IDs, supported activities, valid authored answers',async()=>{const catalogue=JSON.parse(await readFile('content/catalogue.json','utf8'));const ids=new Set();for(const path of catalogue){const b=JSON.parse(await readFile(path,'utf8'));assert.equal(ids.has(b.id),false);ids.add(b.id);assert.equal(new Set(b.pages.map(p=>p.id)).size,b.pages.length);for(const p of b.pages.filter(p=>p.type==='activity')){assert.equal(activityTypes.has(p.activityType),true);for(const q of p.questions){assert.ok(q.hint);assert.equal(checkAnswer(q,q.answer),true);if(q.options)assert.ok(q.options.includes(q.answer));}}}assert.equal(ids.size,2);});
+test('bundled packages have stable unique IDs, supported activities, valid authored answers',async()=>{const catalogue=JSON.parse(await readFile('content/catalogue.json','utf8'));const ids=new Set();for(const path of catalogue){const b=JSON.parse(await readFile(path,'utf8'));assert.equal(ids.has(b.id),false);ids.add(b.id);assert.equal(new Set(b.pages.map(p=>p.id)).size,b.pages.length);for(const p of b.pages.filter(p=>p.type==='activity')){assert.equal(activityTypes.has(p.activityType),true);for(const q of p.questions){assert.ok(q.hint);assert.equal(checkAnswer(q,q.answer),true);if(q.options)assert.ok(q.options.includes(q.answer));}}}assert.equal(ids.size,1);});
 test('all nine character identities round trip through backups, retaining legacy support',()=>{
   assert.equal(avatarChoices.length,9);
   assert.equal(new Set(avatarChoices.map(a=>a.id)).size,9);
@@ -27,4 +27,19 @@ test('all character portraits are bundled and precached within the offline size 
   const worker=await readFile('sw.js','utf8');let total=0;
   for(const choice of avatarChoices){const file=avatarImage(choice.id);const bytes=await readFile(file);assert.equal(bytes.subarray(0,4).toString(),'RIFF');assert.ok(worker.includes(file));total+=bytes.length;}
   assert.ok(total<300000,`Avatar downloads total ${total} bytes`);
+});
+
+test('only Sam is bundled with fourteen ordered, offline illustrations',async()=>{
+  const paths=JSON.parse(await readFile('content/catalogue.json','utf8'));
+  assert.deepEqual(paths,['./content/sam-and-the-red-bag/book.json']);
+  const b=JSON.parse(await readFile(paths[0],'utf8'));
+  assert.equal(b.title,'Sam and the Red Bag');assert.deepEqual(b.audiences,['teens']);assert.equal(b.readingLevel,1);assert.equal(b.sample,false);assert.equal(b.pages.length,14);
+  assert.equal(b.pages[0].text,'Sam has a red bag.');assert.equal(b.pages[13].text,'Sam and the dog eat the ham.');
+  const worker=await readFile('sw.js','utf8');let total=0;
+  for(const [index,p] of b.pages.entries()){
+    assert.equal(p.id,`page-${String(index+1).padStart(2,'0')}`);
+    const asset=`./content/sam-and-the-red-bag/${p.image.slice(2)}`;
+    total+=(await readFile(asset)).length;assert.ok(worker.includes(asset));assert.ok(p.alt);
+  }
+  assert.ok(worker.includes('./content/sam-and-the-red-bag/front-cover.webp'));assert.ok(total<6000000);
 });

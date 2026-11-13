@@ -4,7 +4,7 @@ export async function loadCatalogue() {
   const paths = await response.json();
   return Promise.all(paths.map(async path => {
     const response = await fetch(path);
-    if (!response.ok) throw new Error('A sample book could not be downloaded. Please reload while online.');
+    if (!response.ok) throw new Error('A book could not be downloaded. Please reload while online.');
     const book = await response.json();
     book.cover = new URL(book.cover, new URL(path, location.href)).href;
     for (const page of book.pages) {

@@ -1,6 +1,6 @@
 # Reading Room
 
-**Status:** Working first release with two sample books; see `IMPLEMENTATION.md` for verification and remaining release checks.  
+**Status:** Working app with Sam and the Red Bag (Teens, Level 1); see `IMPLEMENTATION.md` for verification and remaining release checks.
 **Product:** Installable, offline-first reading practice web app (PWA) for children, teenagers and adults.  
 **Audience for these documents:** Contributors and product owner.
 
@@ -68,3 +68,7 @@ The public repository deploys to **https://englishindoses.github.io/reading-room
 The user authorized implementation after this design handoff. Proposed defaults are marked `PROPOSED` and can be changed later. Avoid reopening settled decisions unless technically impossible or contradictory.
 
 The first release can ship with a *small sample* of book/activity content, but the app structure must support books with bespoke page sequences and reusable activity components. No server, accounts, subscriptions or cloud sync in v1.
+
+## Current story
+
+The only bundled book is **Sam and the Red Bag**, for **Teens, Level 1**. Its 14 illustrated pages preserve the text and order of the supplied revised A4 PDF. Optimized WebP copies of the cover and illustrations are shipped; print PDFs and original artwork stay outside the app build. The previous placeholder packages have been removed; historical user records are retained. No exercises have been added to this story.

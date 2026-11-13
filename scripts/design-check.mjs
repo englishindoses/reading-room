@@ -30,6 +30,7 @@ try {
   await until(`!!document.querySelector('#profile-form')`);
   await capture('onboarding-mobile',390,844,true);
   await fill('[name=name]', 'Alex');
+  await fill('[name=audience]', 'teens');
   await click('#profile-form [type=submit]');
   await until(`!!document.querySelector('#books')`);
   await capture('library-mobile-full',390,844,true);
@@ -62,11 +63,11 @@ try {
   await route('settings'); await capture('settings-mobile',390,844,true);
   await fill('#language','pt-BR'); await pause(120); await route('library'); await capture('library-portuguese',320,844,true);
   await route('profile'); await route('settings'); await fill('#language','en'); await pause(120);
-  await route('library'); await click('[data-action=details][data-id=sample-red-bag]'); await pause(120); await capture('details-mobile',390,844,true);
+  await route('library'); await click('[data-action=details][data-id=sam-and-the-red-bag]'); await pause(120); await capture('details-mobile',390,844,true);
   await route('start'); await route('toggle-nav'); await capture('reader-expanded-mobile',390,844,true);
   await click('[data-action=page][data-index="3"]'); await pause(150); await route('toggle-nav');
-  await capture('activity-mobile',390,844,true);
-  await click('input[data-answer=bag-color][value=Red]'); await pause(150); await route('check'); await capture('feedback-mobile',390,844,true);
+  await capture('story-mobile',390,844,true);
+
   await route('profile'); await route('collections'); await capture('collections-empty',390,844,true);
-  console.log('Design checks passed: three theme contrast palettes, phone layouts, Portuguese at 320px, onboarding, details, filters, profile, settings, activities, feedback, expanded reader, empty collections.');
+  console.log('Design checks passed: three theme contrast palettes, phone layouts, Portuguese at 320px, onboarding, details, filters, profile, settings, illustrated story, expanded reader, empty collections.');
 } finally { await browser.close(); }

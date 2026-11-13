@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "id": "sam-and-the-red-bag",
+  "contentVersion": 1,
+  "title": "Sam and the Red Bag",
+  "subtitle": "",
+  "description": "Sam takes a bus ride with his red bag. When the bag goes missing, a dog leads him on a chase.",
+  "readingLevel": 1,
+  "audiences": [
+    "teens"
+  ],
+  "categories": [
+    "Everyday life"
+  ],
+  "seriesId": "First reads",
+  "sample": false,
+  "cover": "./front-cover.webp",
+  "color": "#a44632",
+  "minutes": 4,
+  "pages": [
+    {
+      "id": "page-01",
+      "type": "story",
+      "title": "Page 1",
+      "layout": "image-above-text",
+      "image": "./page-01.webp",
+      "alt": "Sam has a red bag.",
+      "text": "Sam has a red bag."
+    },
+    {
+      "id": "page-02",
+      "type": "story",
+      "title": "Page 2",
+      "layout": "image-above-text",
+      "image": "./page-02.webp",
+      "alt": "Sam gets on the bus.",
+      "text": "Sam gets on the bus."
+    },
+    {
+      "id": "page-03",
+      "type": "story",
+      "title": "Page 3",
+      "layout": "image-above-text",
+      "image": "./page-03.webp",
+      "alt": "The bus is big.",
+      "text": "The bus is big."
+    },
+    {
+      "id": "page-04",
+      "type": "story",
+      "title": "Page 4",
+      "layout": "image-above-text",
+      "image": "./page-04.webp",
+      "alt": "Sam sits.",
+      "text": "Sam sits."
+    },
+    {
+      "id": "page-05",
+      "type": "story",
+      "title": "Page 5",
+      "layout": "image-above-text",
+      "image": "./page-05.webp",
+      "alt": "The bus stops.",
+      "text": "The bus stops."
+    },
+    {
+      "id": "page-06",
+      "type": "story",
+      "title": "Page 6",
+      "layout": "image-above-text",
+      "image": "./page-06.webp",
+      "alt": "Sam gets off the bus.",
+      "text": "Sam gets off the bus."
+    },
+    {
+      "id": "page-07",
+      "type": "story",
+      "title": "Page 7",
+      "layout": "image-above-text",
+      "image": "./page-07.webp",
+      "alt": "The bag is not here.",
+      "text": "The bag is not here."
+    },
+    {
+      "id": "page-08",
+      "type": "story",
+      "title": "Page 8",
+      "layout": "image-above-text",
+      "image": "./page-08.webp",
+      "alt": "A dog has the bag.",
+      "text": "A dog has the bag."
+    },
+    {
+      "id": "page-09",
+      "type": "story",
+      "title": "Page 9",
+      "layout": "image-above-text",
+      "image": "./page-09.webp",
+      "alt": "The dog runs.",
+      "text": "The dog runs."
+    },
+    {
+      "id": "page-10",
+      "type": "story",
+      "title": "Page 10",
+      "layout": "image-above-text",
+      "image": "./page-10.webp",
+      "alt": "Sam runs and runs.",
+      "text": "Sam runs and runs."
+    },
+    {
+      "id": "page-11",
+      "type": "story",
+      "title": "Page 11",
+      "layout": "image-above-text",
+      "image": "./page-11.webp",
+      "alt": "The dog sits.",
+      "text": "The dog sits."
+    },
+    {
+      "id": "page-12",
+      "type": "story",
+      "title": "Page 12",
+      "layout": "image-above-text",
+      "image": "./page-12.webp",
+      "alt": "Sam gets the bag.",
+      "text": "Sam gets the bag."
+    },
+    {
+      "id": "page-13",
+      "type": "story",
+      "title": "Page 13",
+      "layout": "image-above-text",
+      "image": "./page-13.webp",
+      "alt": "There is ham in the bag.",
+      "text": "There is ham in the bag."
+    },
+    {
+      "id": "page-14",
+      "type": "story",
+      "title": "Page 14",
+      "layout": "image-above-text",
+      "image": "./page-14.webp",
+      "alt": "Sam and the dog eat the ham.",
+      "text": "Sam and the dog eat the ham."
+    }
+  ]
+}
