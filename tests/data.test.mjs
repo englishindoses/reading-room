@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { validateBackup, exportBackup, flattenProfile, importAsNew, mergeProfiles } from '../src/backup.js';
 import { checkAnswer, activityTypes } from '../src/content.js';
-import { avatarChoices, avatarImage, resolveAvatarId } from '../src/avatars.js';
+import { avatarChoices, avatarImage, legacyAvatarIds, resolveAvatarId } from '../src/avatars.js';
 const fixture=()=>({profileId:'reader-a',name:'Reader',audience:'adults',avatar:'leaf',preferences:{language:'en',animation:'none',level:1,filters:{}},readingProgress:[{profileId:'reader-a',bookId:'sample-red-bag',pageId:'story-01',status:'in-progress',runId:'run-a'}],activityAttempts:[{profileId:'reader-a',attemptId:'attempt-a',bookId:'sample-red-bag',pageId:'check-01',runId:'run-a',answers:{'bag-color':'Red'}}],collections:[{profileId:'reader-a',collectionId:'collection-a',name:'My shelf',bookIds:['sample-red-bag']}]});
 test('backup round trip preserves progress, avatar, settings, answers and collections',()=>{const p=fixture();p.avatar='data:image/png;base64,YQ==';assert.deepEqual(flattenProfile(validateBackup(JSON.parse(JSON.stringify(exportBackup([p])))).profiles[0]),p);});
 test('invalid, future, unsafe, cross-profile and duplicate records are rejected',()=>{
@@ -15,12 +15,13 @@ test('merge is idempotent and preserves distinct attempts and collections',()=>{
 test('conflicting answers require an explicit resolution and leave inputs intact',()=>{const a=fixture(),b=fixture();b.activityAttempts[0].answers['bag-color']='Blue';const result=mergeProfiles(a,b);assert.equal(result.conflicts.length,1);const key=result.conflicts[0].key;const resolved=mergeProfiles(a,b,{[key]:'incoming'});assert.equal(resolved.profile.activityAttempts[0].answers['bag-color'],'Blue');assert.equal(a.activityAttempts[0].answers['bag-color'],'Red');});
 test('same-name collections with different identities are reviewed',()=>{const a=fixture(),b=fixture();b.collections[0].collectionId='different';b.collections[0].bookIds=['sample-pond'];assert.equal(mergeProfiles(a,b).conflicts.length,1);});
 test('typed answers normalize only when authored; blanks never score',()=>{const q={answer:'pen',normalization:{trim:true,caseInsensitive:true}};assert.equal(checkAnswer(q,' PEN '),true);assert.equal(checkAnswer(q,'pin'),false);assert.equal(checkAnswer(q,''),false);assert.equal(checkAnswer({answer:'pen'},'Pen'),false);});
-test('bundled packages have stable unique IDs, supported activities, valid authored answers',async()=>{const catalogue=JSON.parse(await readFile('content/catalogue.json','utf8'));const ids=new Set();for(const path of catalogue){const b=JSON.parse(await readFile(path,'utf8'));assert.equal(ids.has(b.id),false);ids.add(b.id);assert.equal(new Set(b.pages.map(p=>p.id)).size,b.pages.length);for(const p of b.pages.filter(p=>p.type==='activity')){assert.equal(activityTypes.has(p.activityType),true);for(const q of p.questions){assert.ok(q.hint);assert.equal(checkAnswer(q,q.answer),true);if(q.options)assert.ok(q.options.includes(q.answer));}}}assert.equal(ids.size,1);});
+test('bundled packages have stable unique IDs, supported activities, valid authored answers',async()=>{const catalogue=JSON.parse(await readFile('content/catalogue.json','utf8'));const ids=new Set();for(const path of catalogue){const b=JSON.parse(await readFile(path,'utf8'));assert.equal(ids.has(b.id),false);ids.add(b.id);assert.equal(new Set(b.pages.map(p=>p.id)).size,b.pages.length);for(const p of b.pages.filter(p=>p.type==='activity')){assert.equal(activityTypes.has(p.activityType),true);assert.equal(new Set(p.questions.map(q=>q.id)).size,p.questions.length);for(const q of p.questions){assert.ok(q.prompt);if(p.activityType==='open-response'){assert.equal(q.answer,undefined);continue;}assert.ok(q.hint);assert.equal(checkAnswer(q,q.answer),true);if(q.options)assert.ok(q.options.includes(q.answer));}}}assert.equal(ids.size,1);});
 test('all nine character identities round trip through backups, retaining legacy support',()=>{
   assert.equal(avatarChoices.length,9);
   assert.equal(new Set(avatarChoices.map(a=>a.id)).size,9);
   for(const choice of avatarChoices){const p=fixture();p.avatar=choice.id;assert.equal(flattenProfile(validateBackup(exportBackup([p])).profiles[0]).avatar,choice.id);}
-  for(const legacy of ['leaf','sun','moon','flower']){const p=fixture();p.avatar=legacy;assert.equal(flattenProfile(validateBackup(exportBackup([p])).profiles[0]).avatar,legacy);assert.ok(avatarChoices.some(a=>a.id===resolveAvatarId(legacy)));}
+  for(const audience of ['kids','teens','adults'])assert.equal(avatarChoices.filter(a=>a.audience===audience).length,3);
+  for(const legacy of legacyAvatarIds){const p=fixture();p.avatar=legacy;assert.equal(flattenProfile(validateBackup(exportBackup([p])).profiles[0]).avatar,legacy);assert.match(resolveAvatarId(legacy),/^character-[1-9]$/);}
   const p=fixture();p.avatar='character-99';assert.throws(()=>validateBackup(exportBackup([p])));
 });
 test('all character portraits are bundled and precached within the offline size budget',async()=>{
@@ -33,10 +34,12 @@ test('only Sam is bundled with fourteen ordered, offline illustrations',async()=
   const paths=JSON.parse(await readFile('content/catalogue.json','utf8'));
   assert.deepEqual(paths,['./content/sam-and-the-red-bag/book.json']);
   const b=JSON.parse(await readFile(paths[0],'utf8'));
-  assert.equal(b.title,'Sam and the Red Bag');assert.deepEqual(b.audiences,['teens']);assert.equal(b.readingLevel,1);assert.equal(b.sample,false);assert.equal(b.pages.length,14);
+  assert.equal(b.title,'Sam and the Red Bag');assert.deepEqual(b.audiences,['teens']);assert.equal(b.readingLevel,1);assert.equal(b.sample,false);assert.equal(b.pages.length,20);
+  assert.deepEqual(b.pages.slice(14).map(p=>p.id),['middle-sound','beginning-sound','ending-sound','vocabulary-match','story-true-false','talk-about-you']);
+  assert.equal(b.pages.at(-1).questions.length,7);
   assert.equal(b.pages[0].text,'Sam has a red bag.');assert.equal(b.pages[13].text,'Sam and the dog eat the ham.');
   const worker=await readFile('sw.js','utf8');let total=0;
-  for(const [index,p] of b.pages.entries()){
+  for(const [index,p] of b.pages.slice(0,14).entries()){
     assert.equal(p.id,`page-${String(index+1).padStart(2,'0')}`);
     const asset=`./content/sam-and-the-red-bag/${p.image.slice(2)}`;
     total+=(await readFile(asset)).length;assert.ok(worker.includes(asset));assert.ok(p.alt);

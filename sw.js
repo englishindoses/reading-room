@@ -1,4 +1,4 @@
-const VERSION = 'reading-room-assets-v4-sam-red-bag';
+const VERSION = 'reading-room-assets-v5-story-activities';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
@@ -6,6 +6,15 @@ const ASSETS = [
   './assets/avatars/character-1.webp', './assets/avatars/character-2.webp', './assets/avatars/character-3.webp',
   './assets/avatars/character-4.webp', './assets/avatars/character-5.webp', './assets/avatars/character-6.webp',
   './assets/avatars/character-7.webp', './assets/avatars/character-8.webp', './assets/avatars/character-9.webp',
+  './assets/avatars/pocket-dragon.webp',
+  './assets/avatars/cloud-sheep.webp',
+  './assets/avatars/mushroom-sprite.webp',
+  './assets/avatars/moon-moth.webp',
+  './assets/avatars/space-fox.webp',
+  './assets/avatars/cassette-robot.webp',
+  './assets/avatars/mapmaker-owl.webp',
+  './assets/avatars/moss-golem.webp',
+  './assets/avatars/pearl-nautilus.webp',
   './content/catalogue.json',
   './content/sam-and-the-red-bag/book.json',
   './content/sam-and-the-red-bag/front-cover.webp',

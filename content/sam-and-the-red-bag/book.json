@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "sam-and-the-red-bag",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "title": "Sam and the Red Bag",
   "subtitle": "",
   "description": "Sam takes a bus ride with his red bag. When the bag goes missing, a dog leads him on a chase.",
@@ -143,6 +143,335 @@
       "image": "./page-14.webp",
       "alt": "Sam and the dog eat the ham.",
       "text": "Sam and the dog eat the ham."
+    },
+    {
+      "id": "middle-sound",
+      "type": "activity",
+      "activityType": "select-gap",
+      "title": "Middle sounds",
+      "instructions": "Say each word slowly. Choose the letter for the middle sound.",
+      "questions": [
+        {
+          "prompt": "b_g — what Sam carries",
+          "answer": "a",
+          "options": [
+            "a",
+            "e",
+            "i"
+          ],
+          "hint": "Say bag. Stretch the sound between b and g.",
+          "id": "q1"
+        },
+        {
+          "prompt": "r_d — the colour of Sam’s bag",
+          "answer": "e",
+          "options": [
+            "i",
+            "a",
+            "e"
+          ],
+          "hint": "Say red. Listen between r and d.",
+          "id": "q2"
+        },
+        {
+          "prompt": "b_s — what Sam rides",
+          "answer": "u",
+          "options": [
+            "o",
+            "u",
+            "a"
+          ],
+          "hint": "Say bus. Listen between b and s.",
+          "id": "q3"
+        },
+        {
+          "prompt": "b_g — the size of the bus",
+          "answer": "i",
+          "options": [
+            "e",
+            "i",
+            "o"
+          ],
+          "hint": "Say big. Listen between b and g.",
+          "id": "q4"
+        }
+      ]
+    },
+    {
+      "id": "beginning-sound",
+      "type": "activity",
+      "activityType": "select-gap",
+      "title": "Beginning sounds",
+      "instructions": "Say each word. Choose the letter for the first sound.",
+      "questions": [
+        {
+          "prompt": "_og — the animal with the bag",
+          "answer": "d",
+          "options": [
+            "b",
+            "d",
+            "g"
+          ],
+          "hint": "Listen to the very first sound in dog.",
+          "id": "q1"
+        },
+        {
+          "prompt": "_am — the food in the bag",
+          "answer": "h",
+          "options": [
+            "h",
+            "m",
+            "s"
+          ],
+          "hint": "Say ham slowly. What do you hear before am?",
+          "id": "q2"
+        },
+        {
+          "prompt": "_ed — the colour of Sam’s bag",
+          "answer": "r",
+          "options": [
+            "d",
+            "s",
+            "r"
+          ],
+          "hint": "Listen to the first sound in red.",
+          "id": "q3"
+        },
+        {
+          "prompt": "_us — what Sam rides",
+          "answer": "b",
+          "options": [
+            "b",
+            "d",
+            "t"
+          ],
+          "hint": "Say bus slowly. What do you hear before us?",
+          "id": "q4"
+        }
+      ]
+    },
+    {
+      "id": "ending-sound",
+      "type": "activity",
+      "activityType": "select-gap",
+      "title": "Ending sounds",
+      "instructions": "Say each word. Choose the letter for the last sound.",
+      "questions": [
+        {
+          "prompt": "do_ — the animal with the bag",
+          "answer": "g",
+          "options": [
+            "d",
+            "g",
+            "t"
+          ],
+          "hint": "Say dog. Stop right after the last sound.",
+          "id": "q1"
+        },
+        {
+          "prompt": "ha_ — the food in the bag",
+          "answer": "m",
+          "options": [
+            "n",
+            "t",
+            "m"
+          ],
+          "hint": "Listen to what comes after ha in ham.",
+          "id": "q2"
+        },
+        {
+          "prompt": "re_ — the colour of Sam’s bag",
+          "answer": "d",
+          "options": [
+            "d",
+            "b",
+            "g"
+          ],
+          "hint": "Say red slowly. Listen after re.",
+          "id": "q3"
+        },
+        {
+          "prompt": "bu_ — what Sam rides",
+          "answer": "s",
+          "options": [
+            "s",
+            "m",
+            "t"
+          ],
+          "hint": "Say bus slowly. Listen to the last sound.",
+          "id": "q4"
+        }
+      ]
+    },
+    {
+      "id": "vocabulary-match",
+      "type": "activity",
+      "activityType": "matching",
+      "title": "Match the words",
+      "instructions": "Match each clue to a word from the story.",
+      "questions": [
+        {
+          "prompt": "A large vehicle that carries people.",
+          "answer": "bus",
+          "hint": "Sam gets on it.",
+          "options": [
+            "red",
+            "ham",
+            "bus",
+            "dog",
+            "bag"
+          ],
+          "id": "q1"
+        },
+        {
+          "prompt": "Something you can carry things in.",
+          "answer": "bag",
+          "hint": "Sam carries his things in it.",
+          "options": [
+            "red",
+            "ham",
+            "bus",
+            "dog",
+            "bag"
+          ],
+          "id": "q2"
+        },
+        {
+          "prompt": "An animal that can bark.",
+          "answer": "dog",
+          "hint": "This animal runs with the bag.",
+          "options": [
+            "red",
+            "ham",
+            "bus",
+            "dog",
+            "bag"
+          ],
+          "id": "q3"
+        },
+        {
+          "prompt": "Meat from a pig.",
+          "answer": "ham",
+          "hint": "Sam shares this food.",
+          "options": [
+            "red",
+            "ham",
+            "bus",
+            "dog",
+            "bag"
+          ],
+          "id": "q4"
+        },
+        {
+          "prompt": "The colour of a strawberry.",
+          "answer": "red",
+          "hint": "Look at the colour of Sam’s bag.",
+          "options": [
+            "red",
+            "ham",
+            "bus",
+            "dog",
+            "bag"
+          ],
+          "id": "q5"
+        }
+      ]
+    },
+    {
+      "id": "story-true-false",
+      "type": "activity",
+      "activityType": "true-false",
+      "title": "True or false?",
+      "instructions": "Read each sentence. Is it true in the story?",
+      "questions": [
+        {
+          "prompt": "Sam has a red bag.",
+          "answer": "True",
+          "hint": "Look at the bag on page 1.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "id": "q1"
+        },
+        {
+          "prompt": "The bus is small.",
+          "answer": "False",
+          "hint": "Look at the bus on page 3.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "id": "q2"
+        },
+        {
+          "prompt": "A dog has the bag.",
+          "answer": "True",
+          "hint": "Look at page 8.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "id": "q3"
+        },
+        {
+          "prompt": "There is an apple in the bag.",
+          "answer": "False",
+          "hint": "Look inside the bag on page 13.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "id": "q4"
+        },
+        {
+          "prompt": "Sam and the dog eat the ham.",
+          "answer": "True",
+          "hint": "Look at the last page of the story.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "id": "q5"
+        }
+      ]
+    },
+    {
+      "id": "talk-about-you",
+      "type": "activity",
+      "activityType": "open-response",
+      "title": "About you",
+      "instructions": "Talk about these questions with someone, or type your answers.",
+      "questions": [
+        {
+          "prompt": "Do you like red?",
+          "id": "q1"
+        },
+        {
+          "prompt": "What’s your favourite colour?",
+          "id": "q2"
+        },
+        {
+          "prompt": "What colour is your bag?",
+          "id": "q3"
+        },
+        {
+          "prompt": "What’s in your bag?",
+          "id": "q4"
+        },
+        {
+          "prompt": "Do you have a dog?",
+          "id": "q5"
+        },
+        {
+          "prompt": "Do you go to school by bus?",
+          "id": "q6"
+        },
+        {
+          "prompt": "What’s your favourite snack?",
+          "id": "q7"
+        }
+      ]
     }
   ]
 }

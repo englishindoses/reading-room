@@ -22,4 +22,4 @@ export function checkAnswer(question, answer) {
   };
   return (question.acceptedAnswers || [question.answer]).some(expected => normalize(expected) === normalize(answer));
 }
-export const activityTypes = new Set(['multiple-choice', 'true-false', 'typed-gap', 'select-gap', 'matching', 'drag-drop']);
+export const activityTypes = new Set(['multiple-choice', 'true-false', 'typed-gap', 'select-gap', 'matching', 'drag-drop', 'open-response']);

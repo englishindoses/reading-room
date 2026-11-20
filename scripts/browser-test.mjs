@@ -10,8 +10,9 @@ const persisted=()=>until(`document.querySelector('#save-state')?.textContent.in
 const route=async action=>{await click(`[data-action="${action}"]`);await pause(150);};
 async function screenshot(file,width,height){await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<600});await pause(150);await evaluate('window.scrollTo(0,0)');const result=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(file,Buffer.from(result.data,'base64'));}
 try {
+  await mkdir('.impeccable/review',{recursive:true});
   await send('Page.navigate',{url:'http://127.0.0.1:4173/'});
-  await test('first launch creates a local profile',async()=>{await until(`!!document.querySelector('#profile-form')`);await until(`Array.from(document.querySelectorAll('.avatar-options img')).length===9 && Array.from(document.querySelectorAll('.avatar-options img')).every(img=>img.complete && img.naturalWidth>0)`);await click('input[name=avatar][value=character-9]');await screenshot('.impeccable/review/avatar-picker-mobile.png',390,1000);await fill('[name=name]','Alex');await fill('[name=audience]','teens');await click('#profile-form [type=submit]');await until(`!!document.querySelector('#books')`);assert.match(await evaluate('document.body.innerText'),/Welcome back, Alex/);assert.equal(await evaluate(`document.querySelector('#header .avatar img').getAttribute('src')`),'./assets/avatars/character-9.webp');});
+  await test('first launch creates a local profile',async()=>{await until(`!!document.querySelector('#profile-form')`);await until(`Array.from(document.querySelectorAll('.avatar-options img')).length===9 && Array.from(document.querySelectorAll('.avatar-options img')).every(img=>img.complete && img.naturalWidth>0)`);await click('input[name=avatar][value=pearl-nautilus]');await screenshot('.impeccable/review/avatar-picker-mobile.png',390,1000);await fill('[name=name]','Alex');await fill('[name=audience]','teens');await click('#profile-form [type=submit]');await until(`!!document.querySelector('#books')`);assert.match(await evaluate('document.body.innerText'),/Welcome back, Alex/);assert.equal(await evaluate(`document.querySelector('#header .avatar img').getAttribute('src')`),'./assets/avatars/pearl-nautilus.webp');});
   await test('all bundled files are ready offline',async()=>{await until(`document.querySelector('.offline-status').textContent.includes('Ready offline')`,20000);});
   await mkdir('.impeccable/review',{recursive:true});
   await screenshot('.impeccable/review/desktop.png',1440,1000);
@@ -24,14 +25,44 @@ try {
     await send('Page.reload');await until(`!!document.querySelector('#books')`);
     await click('[data-action=details][data-id=sam-and-the-red-bag]');await route('start');
     assert.match(await evaluate('document.body.innerText'),/Sam and the dog eat the ham\./);
-    await route('next');await until(`document.body.innerText.includes('Book finished')`);await route('stats');
+    await send('Emulation.setDeviceMetricsOverride',{width:1366,height:650,deviceScaleFactor:1,mobile:false});
+    await until(`document.querySelector('.page-image img').complete`);
+    const bounds = await evaluate(`({
+      controls: document.querySelector('.reader-controls').getBoundingClientRect().bottom,
+      dock: document.querySelector('.reader-nav').getBoundingClientRect().top,
+      image: document.querySelector('.page-image img').getBoundingClientRect().height,
+      header: document.querySelector('#header').getBoundingClientRect().height,
+      top: document.querySelector('.reader-top').getBoundingClientRect().height,
+      height: innerHeight
+    })`);
+    assert.ok(bounds.controls <= bounds.dock, JSON.stringify(bounds));
+    await click('[data-action=previous]');
+    assert.ok(await evaluate(`document.querySelector('.reader-paper').classList.contains('animate-book') && scrollY === 0`));
+    await route('reader-back');
+    await route('start-activities');
+    assert.equal(await evaluate(`document.querySelector('.reader-paper h1').textContent`),'Middle sounds');
+    await fill('[data-answer=q1]','a');
+    await route('reader-back');
+    await route('start-activities');
+    await route('resume-answers');
+    assert.equal(await evaluate(`document.querySelector('[data-answer=q1]').value`),'a');
+    await route('check');
+    assert.match(await evaluate('document.body.innerText'),/Correct. Well done!/);
+    await route('toggle-nav');
+    await click('[data-action=page][data-index="19"]');
+    await fill('textarea[data-answer=q1]','Yes, I like red.');
+    await route('next');await until(`document.body.innerText.includes('Book finished')`);
+    await route('stats');
+    const downloaded = await evaluate(`(async()=>{let summary; const create=URL.createObjectURL; URL.createObjectURL=blob=>{summary=blob.text();return create.call(URL,blob);}; try {document.querySelector('[data-action=download-summary]').click();await Promise.resolve();return await summary;} finally {URL.createObjectURL=create;}})()`);
+    assert.match(downloaded,/^Alex\nBooks finished: 1/);
+    assert.doesNotMatch(downloaded,/I like red/);
   });
   await test('collection creation and membership persist',async()=>{await route('collections');await route('new-collection');await fill('#collection-form [name=name]','My favourites');await click('#collection-form .primary');await until(`!document.querySelector('dialog[open]')`);await route('library');await click('[data-action=add-collection][data-id=sam-and-the-red-bag]');await click('[data-action=add-to-existing]');await until(`!document.querySelector('dialog[open]')`);await route('collections');await route('collection');assert.match(await evaluate('document.body.innerText'),/Sam and the Red Bag/);});
   await test('second profile has isolated progress and theme',async()=>{await route('profile');await route('profiles');await route('create');await fill('[name=name]','Jamie');await fill('[name=audience]','teens');await click('#profile-form [type=submit]');await until(`document.querySelector('#books') && document.body.dataset.theme==='teens'`);const rows=await evaluate(`(async()=>{const {readAll}=await import('./src/db.js');return await readAll('profiles');})()`);assert.equal(rows.length,2);assert.equal(rows.find(p=>p.name==='Jamie').readingProgress.length,0);assert.equal(rows.find(p=>p.name==='Alex').readingProgress[0].status,'finished');});
   await test('Portuguese changes UI and leaves authored books untouched',async()=>{await route('profile');await route('settings');await fill('#language','pt-BR');await until(`document.documentElement.lang==='pt-BR'`);assert.match(await evaluate('document.body.innerText'),/Configurações/);await route('library');assert.match(await evaluate('document.body.innerText'),/Sam and the Red Bag/);await route('profile');await route('settings');await fill('#language','en');await until(`document.documentElement.lang==='en'`);});
   await test('backup new, merge and replace preserve other profiles',async()=>{
     const result=await evaluate(`(async()=>{const db=await import('./src/db.js'),b=await import('./src/backup.js');const profiles=await db.readAll('profiles');const backup=b.validateBackup(b.exportBackup(profiles));const original=profiles.find(p=>p.name==='Alex');const copy=b.importAsNew(backup.profiles.find(p=>p.profile.name==='Alex'));await db.writeRecords([{store:'profiles',value:copy}]);const incoming=structuredClone(original);incoming.readingProgress[0].pageId='page-02';const conflict=b.mergeProfiles(original,incoming);if(!conflict.conflicts.length)throw Error('No conflict');const resolved=b.mergeProfiles(original,incoming,{[conflict.conflicts[0].key]:'incoming'}).profile;await db.writeRecords([{store:'profiles',value:resolved}]);const replacement=b.flattenProfile(backup.profiles.find(p=>p.profile.name==='Alex'));await db.writeRecords([{store:'profiles',value:replacement}]);const after=await db.readAll('profiles');return {length:after.length,other:after.find(p=>p.name==='Jamie').readingProgress.length,replaced:after.find(p=>p.name==='Alex').readingProgress[0].pageId,copyId:copy.profileId,originalId:original.profileId};})()`);
-    assert.equal(result.length,3);assert.equal(result.other,0);assert.notEqual(result.copyId,result.originalId);assert.equal(result.replaced,'page-14');
+    assert.equal(result.length,3);assert.equal(result.other,0);assert.notEqual(result.copyId,result.originalId);assert.equal(result.replaced,'talk-about-you');
   });
   await test('IndexedDB version 1 to 2 preserves populated records',async()=>{
     const result=await evaluate(`(async()=>{const name='reading-app-migration-fixture';const first=await new Promise((resolve,reject)=>{const r=indexedDB.open(name,1);r.onupgradeneeded=()=>{r.result.createObjectStore('profiles',{keyPath:'profileId'});r.result.createObjectStore('appMeta',{keyPath:'key'});};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});await new Promise((resolve,reject)=>{const tx=first.transaction('profiles','readwrite');tx.objectStore('profiles').put({profileId:'fixture',name:'Preserved',answers:{q:'Red'},avatar:'sun'});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});first.close();const {openDatabase}=await import('./src/db.js');const upgraded=await openDatabase(name,2);const record=await new Promise(resolve=>{const r=upgraded.transaction('profiles').objectStore('profiles').get('fixture');r.onsuccess=()=>resolve(r.result);});const hasRecovery=upgraded.objectStoreNames.contains('recovery');upgraded.close();return {record,hasRecovery};})()`);

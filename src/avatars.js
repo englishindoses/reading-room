@@ -1,16 +1,23 @@
 export const avatarChoices = [
-  { id: 'character-1', name: 'Maya', description: 'Girl with natural hair puffs' },
-  { id: 'character-2', name: 'Leo', description: 'Boy with round teal glasses' },
-  { id: 'character-3', name: 'Robin', description: 'Child with ginger curls and freckles' },
-  { id: 'character-4', name: 'Noor', description: 'Teen with a plum headscarf' },
-  { id: 'character-5', name: 'Arun', description: 'Teen with wavy hair and a blue hoodie' },
-  { id: 'character-6', name: 'Alex', description: 'Teen with curls, glasses and a honey cardigan' },
-  { id: 'character-7', name: 'Imani', description: 'Woman with dark curls and a terracotta top' },
-  { id: 'character-8', name: 'Kenji', description: 'Older man with silver hair and glasses' },
-  { id: 'character-9', name: 'Rose', description: 'Older woman with silver hair and a warm scarf' }
+  { id: 'pocket-dragon', name: 'Pocket Dragon', audience: 'kids' },
+  { id: 'cloud-sheep', name: 'Cloud Sheep', audience: 'kids' },
+  { id: 'mushroom-sprite', name: 'Mushroom Sprite', audience: 'kids' },
+  { id: 'moon-moth', name: 'Moon Moth', audience: 'teens' },
+  { id: 'space-fox', name: 'Space Fox', audience: 'teens' },
+  { id: 'cassette-robot', name: 'Cassette Robot', audience: 'teens' },
+  { id: 'mapmaker-owl', name: 'Mapmaker Owl', audience: 'adults' },
+  { id: 'moss-golem', name: 'Moss Golem', audience: 'adults' },
+  { id: 'pearl-nautilus', name: 'Pearl Nautilus', audience: 'adults' }
 ];
-export const legacyAvatarIds = ['leaf', 'sun', 'moon', 'flower'];
+
 const legacyPortraits = { leaf: 'character-7', sun: 'character-1', moon: 'character-5', flower: 'character-9' };
-export const resolveAvatarId = value => legacyPortraits[value] || (avatarChoices.some(a => a.id === value) ? value : 'character-7');
+const oldPortraitIds = Array.from({ length: 9 }, (_, index) => 'character-' + (index + 1));
+export const legacyAvatarIds = [...Object.keys(legacyPortraits), ...oldPortraitIds];
+
+export const defaultAvatar = audience => ({ kids: 'pocket-dragon', teens: 'moon-moth', adults: 'mapmaker-owl' })[audience] || 'mapmaker-owl';
+export function resolveAvatarId(value) {
+  if (Object.hasOwn(legacyPortraits, value)) return legacyPortraits[value];
+  if (oldPortraitIds.includes(value) || avatarChoices.some(avatar => avatar.id === value)) return value;
+  return defaultAvatar('adults');
+}
 export const avatarImage = value => `./assets/avatars/${resolveAvatarId(value)}.webp`;
-export const defaultAvatar = audience => ({ kids: 'character-1', teens: 'character-5', adults: 'character-7' })[audience] || 'character-7';

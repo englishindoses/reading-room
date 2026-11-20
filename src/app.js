@@ -76,6 +76,7 @@ function renderNav() {
 function render() {
   setLocale(profile()?.preferences.language || 'en');
   document.body.dataset.theme = profile()?.audience || 'adults';
+  document.body.classList.toggle('is-reading', state.route === 'reader');
   renderHeader();
   const views = { create: profileForm, library: libraryView, details: detailView, reader: readerView, collections: collectionsView, collection: collectionView, profile: profileView, profiles: profilesView, stats: statsView, settings: settingsView, edit: () => profileForm(true), data: dataView, reset: resetView };
   main.innerHTML = (views[state.route] || libraryView)();
@@ -86,11 +87,17 @@ function render() {
 
 function profileForm(edit = false) {
   const p = edit ? profile() : null;
-  const selectedAvatar = p?.avatar?.startsWith('data:') ? null : resolveAvatarId(p?.avatar || defaultAvatar(p?.audience || 'adults'));
+  const selectedAvatar = p ? resolveAvatarId(p.avatar) : null;
   return `<div class="form-panel">${edit ? backButton('settings') : state.profiles.length ? backButton('profiles') : ''}<div class="welcome">${!edit ? `<span class="brand-mark">${icon('book')}</span>` : ''}<h1 class="serif">${t(edit ? 'Edit profile' : 'A little reading. A world to discover.')}</h1><p class="muted">${t(edit ? 'Your profile stays on this device. No account needed.' : 'Your reading journey starts here.')}</p></div><form id="profile-form" class="stack" data-edit="${edit}">
     ${field('Your name', `<input name="name" required maxlength="80" autocomplete="given-name" value="${e(p?.name || '')}">`)}
-    <fieldset class="avatar-field"><legend>${t('Choose an avatar')}</legend><div class="avatar-options">${avatarChoices.map(a => `<label class="avatar-choice"><input type="radio" name="avatar" value="${a.id}" ${selectedAvatar === a.id ? 'checked' : ''} aria-label="${e(a.name)} — ${e(t(a.description))}"><span class="avatar"><img src="${avatarImage(a.id)}" alt="" width="320" height="320"></span><span class="avatar-choice-name">${a.name}</span><span class="avatar-choice-check" aria-hidden="true">${icon('check')}</span></label>`).join('')}</div></fieldset>
-    ${p?.avatar?.startsWith('data:') ? `<div class="row">${avatar(p)}<span class="small muted">${t('Upload photo')}</span></div>` : ''}
+    <fieldset class="avatar-field"><legend>${t('Choose an avatar')}</legend>
+      ${p && !avatarChoices.some(a => a.id === selectedAvatar) ? `<div class="row current-avatar">${avatar(p)}<span class="small muted">${t('Current avatar')}</span></div>` : ''}
+      ${[['kids','Kids'],['teens','Teens'],['adults','Adults']].map(([audience,label]) => `
+        <div class="avatar-group" role="group" aria-label="${t(label)}">
+          <h2>${t(label)}</h2>
+          <div class="avatar-options">${avatarChoices.filter(a => a.audience === audience).map(a => `<label class="avatar-choice"><input type="radio" name="avatar" value="${a.id}" ${selectedAvatar === a.id && !p?.avatar?.startsWith('data:') ? 'checked' : ''}><span class="avatar"><img src="${avatarImage(a.id)}" alt="" width="320" height="320"></span><span class="avatar-choice-name">${e(t(a.name))}</span><span class="avatar-choice-check" aria-hidden="true">${icon('check')}</span></label>`).join('')}</div>
+        </div>`).join('')}
+    </fieldset>
     ${field('Upload photo', '<input name="photo" type="file" accept="image/png,image/jpeg,image/webp">')}
     ${field('Audience', `<select name="audience">${[['kids','Kids'],['teens','Teens'],['adults','Adults']].map(([v,l])=>option(v,l,p?.audience || 'adults')).join('')}</select>`)}
     ${field('Reading level', `<input name="level" type="number" min="1" max="99" value="${p?.preferences.level || 1}" required>`)}
@@ -131,7 +138,7 @@ function libraryView() {
 }
 function detailView() {
   const b = book(), p = progress(b);
-  return `${backButton('detail-back')}<section class="book-detail"><img class="cover detail-cover" src="${e(b.cover)}" alt="${e(b.title)}" width="480" height="640"><div class="detail-copy"><span class="badge">${b.audiences.map(a => t({kids:'Kids',teens:'Teens',adults:'Adults'}[a])).join(' &middot; ')}</span><h1 class="serif">${e(b.title)}</h1><p class="muted">${e(b.subtitle)}</p><div class="detail-facts"><span>${t('Level')} ${b.readingLevel}</span><span>${b.minutes} ${t('minutes')}</span><span>${b.pages.length} ${t('Pages').toLocaleLowerCase()}</span></div><p class="description">${e(b.description)}</p><p class="small muted">${e(b.categories.join(' · '))} · ${e(b.seriesId)}</p><p><span class="badge">${statusLabel(p?.status)}</span></p><div class="actions">${button(p?.status === 'finished' ? 'Read again' : p ? 'Continue' : 'Start reading', p?.status === 'finished' ? 'restart' : 'start', 'primary')}${p && p.status !== 'finished' ? button('Start again','restart') : ''}${p?.status === 'finished' ? button('View results','stats') : ''}</div><button class="text-button" data-action="add-collection" data-id="${b.id}">${icon('plus')}${t('Add to collection')}</button></div></section>`;
+  return `${backButton('detail-back')}<section class="book-detail"><img class="cover detail-cover" src="${e(b.cover)}" alt="${e(b.title)}" width="480" height="640"><div class="detail-copy"><span class="badge">${b.audiences.map(a => t({kids:'Kids',teens:'Teens',adults:'Adults'}[a])).join(' &middot; ')}</span><h1 class="serif">${e(b.title)}</h1><p class="muted">${e(b.subtitle)}</p><div class="detail-facts"><span>${t('Level')} ${b.readingLevel}</span><span>${b.minutes} ${t('minutes')}</span><span>${b.pages.length} ${t('Pages').toLocaleLowerCase()}</span></div><p class="description">${e(b.description)}</p><p class="small muted">${e(b.categories.join(' · '))} · ${e(b.seriesId)}</p><p><span class="badge">${statusLabel(p?.status)}</span></p><div class="actions">${button(p?.status === 'finished' ? 'Read again' : p ? 'Continue' : 'Start reading', p?.status === 'finished' ? 'restart' : 'start', 'primary')}${b.pages.some(page => page.type === 'activity') ? button('Do activities','start-activities') : ''}${p && p.status !== 'finished' ? button('Start again','restart') : ''}${p?.status === 'finished' ? button('View results','stats') : ''}</div><button class="text-button" data-action="add-collection" data-id="${b.id}">${icon('plus')}${t('Add to collection')}</button></div></section>`;
 }
 function getAttempt(create = true) {
   const b = book(), page = currentPage(), run = progress(b)?.runId;
@@ -142,6 +149,10 @@ function getAttempt(create = true) {
 function activityView(page) {
   if (!activityTypes.has(page.activityType)) return '<p>This activity is not available in this version. Your progress has been kept.</p>';
   const a = getAttempt();
+  if (page.activityType === 'open-response') {
+    const questions = page.questions.map(q => `<label class="question">${e(q.prompt)}<textarea rows="2" maxlength="500" data-answer="${e(q.id)}">${e(a.answers[q.id])}</textarea></label>`).join('');
+    return `<h1>${e(page.title)}</h1><p class="muted">${e(page.instructions)}</p>${questions}`;
+  }
   if (state.resumePrompt && Object.keys(a.answers).length && !a.checked) return `<h1>${e(page.title)}</h1><div class="notice"><p>${t('Your saved answers are ready.')}</p><div class="actions">${button('Continue your answers','resume-answers','primary')}${button('Start again','retry')}</div></div>`;
   return `<h1>${e(page.title)}</h1><p class="muted">${e(page.instructions)}</p>${page.activityType === 'drag-drop' ? `<div class="drag-bank">${page.questions[0].options.map((word,i)=>`<div class="drag-word" draggable="true" data-word="${e(word)}">${e(word)}</div>`).join('')}</div>` : ''}${page.questions.map((q,i)=>{
     const value = a.answers[q.id];
@@ -158,8 +169,8 @@ function readerView() {
   if (state.finished) return `<section class="reader"><div class="reader-paper finished-page"><span class="large-check">${icon('check')}</span><h1>${t('Book finished')}</h1><p>${e(b.title)}</p><p class="muted">${t('A little further, one page at a time.')}</p><div class="actions">${button('View results','stats','primary')}${button('Back to library','library')}</div></div></section>`;
   const page = currentPage();
   let mode = profile().preferences.animation;
-  if (mode === 'system') mode = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'none' : 'flip';
-  return `<section class="reader"><div class="reader-top">${backButton('reader-back')}<span class="reader-title">${e(b.title)}</span><span class="reader-page-count">${state.page+1} ${t('of')} ${b.pages.length}</span></div><article class="reader-paper ${page.type} ${state.animatePage ? `animate-${mode}` : ''}">${page.type === 'activity' ? activityView(page) : renderContentPage(page)}</article><div class="reader-controls"><button class="secondary" data-action="previous" ${state.page === 0 ? 'disabled' : ''}>${icon('back')}${t('Previous')}</button><button class="primary" data-action="next">${t(state.page === b.pages.length-1 ? 'Finish book' : 'Next')}${icon('arrow')}</button></div></section>`;
+  if (mode === 'system') mode = 'book';
+  return `<section class="reader"><div class="reader-top">${backButton('reader-back')}<span class="reader-title">${e(b.title)}</span><span class="reader-page-count">${state.page+1} ${t('of')} ${b.pages.length}</span></div><article tabindex="-1" class="reader-paper ${page.type} ${state.pageDirection && mode !== 'none' ? `animate-${mode} ${state.pageDirection}` : ''}">${page.type === 'activity' ? activityView(page) : renderContentPage(page)}</article><div class="reader-controls"><button class="secondary" data-action="previous" ${state.page === 0 ? 'disabled' : ''}>${icon('back')}${t('Previous')}</button><button class="primary" data-action="next">${t(state.page === b.pages.length-1 ? 'Finish book' : 'Next')}${icon('arrow')}</button></div></section>`;
 }
 function collectionsView() {
   return `<div class="narrow"><div class="section-heading page-title"><h1>${t('My Collections')}</h1>${button('New collection','new-collection','primary small')}</div>${profile().collections.length ? `<div class="shelf-list">${profile().collections.map(c=>`<button class="shelf-row" data-action="collection" data-id="${c.collectionId}"><span class="row"><span class="shelf-icon">${icon('collection')}</span><span><strong>${e(c.name)}</strong><br><span class="small muted">${c.bookIds.length} ${t('books')}</span></span></span>${icon('arrow')}</button>`).join('')}</div>` : `<section class="empty"><h2 class="serif">${t('A shelf of your own.')}</h2><p>${t('Keep the stories you want to come back to together.')}</p></section>`}</div>`;
@@ -178,10 +189,13 @@ function profilesView() {
   return `<div class="narrow"><h1>${t('Switch profile')}</h1><p class="muted">${t('Your profile stays on this device. No account needed.')}</p><div class="profile-grid">${state.profiles.map(p=>`<button class="profile-option" data-action="select-profile" data-id="${p.profileId}"><span>${avatar(p)}<span>${e(p.name)}<br><span class="small muted">${t({kids:'Kids',teens:'Teens',adults:'Adults'}[p.audience])}</span></span></span>${icon('arrow')}</button>`).join('')}</div><div class="actions">${button('New profile','create','primary')}</div></div>`;
 }
 function stats() { const p = profile(); return { finished:p.readingProgress.filter(r=>r.status === 'finished' || r.completedAt).length, reading:p.readingProgress.filter(r=>r.status === 'in-progress').length, activities:p.activityAttempts.filter(a=>a.checked).length }; }
-function summary(name = '') { const s = stats(); return `${name ? `${name}: ` : ''}${t('Books finished')}: ${s.finished}. ${t('Books in progress')}: ${s.reading}. ${t('Activities checked')}: ${s.activities}.`; }
+function summary() {
+  const s = stats();
+  return [profile().name, `${t('Books finished')}: ${s.finished}`, `${t('Books in progress')}: ${s.reading}`, `${t('Activities checked')}: ${s.activities}`].join('\n');
+}
 function statsView() {
   const s = stats();
-  return `<div class="narrow">${backButton('profile')}<h1>${t('Your progress')}</h1><div class="stats-strip">${[['finished','Books finished'],['reading','Books in progress'],['activities','Activities checked']].map(([k,l])=>`<div class="stat"><strong>${s[k]}</strong><span>${t(l)}</span></div>`).join('')}</div><h2>${t('Activity results')}</h2>${profile().activityAttempts.filter(a=>a.checked).slice().reverse().map(a=>{ const b = state.books.find(b=>b.id === a.bookId); const page = b?.pages.find(p=>p.id===a.pageId); return `<div class="result-row"><div><p>${e(b?.title || 'Unavailable book')}</p><p class="small muted">${e(page?.title || a.pageId)} · ${new Date(a.updatedAt || a.createdAt).toLocaleDateString()}</p></div><span class="score">${a.score ?? 0}/${a.total ?? 0}${a.revealed ? `<br><span class="small muted">${t('Revealed')}</span>` : ''}</span></div>`; }).join('') || `<p class="muted">${t('No results yet. Read a story and try an activity.')}</p>`}<div class="divider">${field('Name in shared summary (optional)', '<input id="share-name" maxlength="80" value="">')}<div class="actions">${button('Share progress','share','primary')}${button('Copy summary','copy-summary')}${button('Download summary','download-summary')}</div></div></div>`;
+  return `<div class="narrow">${backButton('profile')}<h1>${t('Your progress')}</h1><div class="stats-strip">${[['finished','Books finished'],['reading','Books in progress'],['activities','Activities checked']].map(([k,l])=>`<div class="stat"><strong>${s[k]}</strong><span>${t(l)}</span></div>`).join('')}</div><h2>${t('Activity results')}</h2>${profile().activityAttempts.filter(a=>a.checked).slice().reverse().map(a=>{ const b = state.books.find(b=>b.id === a.bookId); const page = b?.pages.find(p=>p.id===a.pageId); return `<div class="result-row"><div><p>${e(b?.title || 'Unavailable book')}</p><p class="small muted">${e(page?.title || a.pageId)} · ${new Date(a.updatedAt || a.createdAt).toLocaleDateString()}</p></div><span class="score">${a.score ?? 0}/${a.total ?? 0}${a.revealed ? `<br><span class="small muted">${t('Revealed')}</span>` : ''}</span></div>`; }).join('') || `<p class="muted">${t('No results yet. Read a story and try an activity.')}</p>`}<div class="divider"><div class="actions">${button('Share progress','share','primary')}${button('Copy summary','copy-summary')}${button('Download summary','download-summary')}</div></div></div>`;
 }
 function settingsView() {
   const p = profile();
@@ -228,31 +242,59 @@ async function submitProfile(form) {
   p.name=name; p.audience=data.get('audience'); p.preferences.level=Number(data.get('level'));
   if (editing && p.audience !== profile().audience) p.preferences.filters.audience=p.audience;
   const photo = data.get('photo');
-  p.avatar = photo?.size ? await readPhoto(photo) : editing && p.avatar.startsWith('data:') && !state.avatarChanged ? p.avatar : data.get('avatar') || defaultAvatar(p.audience);
+  p.avatar = photo?.size ? await readPhoto(photo) : data.get('avatar') || (editing ? p.avatar : null) || defaultAvatar(p.audience);
   if (data.get('removePin')) delete p.pin;
   if (data.get('pin')) p.pin=await hashPin(data.get('pin'));
   await saveProfile(p);
   if (editing) { const idx=state.profiles.findIndex(x=>x.profileId===p.profileId); state.profiles[idx]=p; state.profile=p; go('settings'); toast('Profile saved'); }
   else { state.profiles.push(p); await selectProfile(p,true); navigator.storage?.persist?.().catch(()=>{}); }
-  state.avatarChanged=false;
 }
-async function startReading(restart = false) {
+async function startReading(restart = false, targetIndex = -1) {
   const b=book(); let r=progress(b);
   if (!r || restart) {
     const fresh={profileId:profile().profileId,bookId:b.id,pageId:b.pages[0].id,status:'in-progress',runId:id(),updatedAt:new Date().toISOString(),contentVersion:b.contentVersion};
     if (r) Object.assign(r,fresh); else { r=fresh; profile().readingProgress.push(r); }
   }
-  const i=b.pages.findIndex(p=>p.id===r.pageId); state.page=i<0?0:i;
+  const savedIndex = b.pages.findIndex(p => p.id === r.pageId);
+  state.page = targetIndex >= 0 ? targetIndex : Math.max(0, savedIndex);
+  r.pageId = currentPage().id;
+  r.contentVersion = b.contentVersion;
   r.updatedAt=new Date().toISOString();
-  await persist();
-  go('reader',{finished:false,resumePrompt:true,animatePage:false});
+  const saving = persist();
+  go('reader', { finished:false, resumePrompt:true, pageDirection:null });
+  preloadStoryPages();
+  await saving;
+}
+function preloadStoryPages() {
+  for (const index of [state.page - 1, state.page + 1]) {
+    const src = book().pages[index]?.image;
+    if (src) new Image().src = src;
+  }
 }
 async function pageTurn(index) {
-  const b=book();
-  if (index>=b.pages.length) { const r=progress(b); r.status='finished'; r.completedAt=new Date().toISOString(); r.updatedAt=r.completedAt; await persist(); state.finished=true; state.navOpen=false; render(); window.scrollTo(0,0); return; }
-  state.page=Math.max(0,index); state.finished=false; state.resumePrompt=true; state.animatePage=true;
-  const r=progress(b); r.pageId=currentPage().id; r.updatedAt=new Date().toISOString();
-  await persist(); render(); window.scrollTo(0,0); $('.reader-paper')?.setAttribute('tabindex','-1'); $('.reader-paper')?.focus({preventScroll:true}); state.animatePage=false;
+  const b = book(), r = progress(b);
+  if (index < 0 || (index === state.page && !state.finished)) return;
+  const now = new Date().toISOString();
+  if (index >= b.pages.length) {
+    r.status = 'finished';
+    r.completedAt = now;
+    state.finished = true;
+    state.navOpen = false;
+  } else {
+    state.pageDirection = index < state.page ? 'backward' : 'forward';
+    state.page = index;
+    state.finished = false;
+    state.resumePrompt = true;
+    r.pageId = currentPage().id;
+  }
+  r.updatedAt = now;
+  const saving = persist();
+  render();
+  window.scrollTo({ top:0, behavior:'instant' });
+  $('.reader-paper')?.focus({ preventScroll:true });
+  state.pageDirection = null;
+  if (!state.finished) preloadStoryPages();
+  await saving;
 }
 async function setAnswer(questionId,value) { const a=getAttempt(); a.answers[questionId]=value; a.checked=false; a.updatedAt=new Date().toISOString(); await persist(); $$('.feedback').forEach(el=>el.remove()); }
 async function retryActivity() { const old=getAttempt(); old.archived=true; state.resumePrompt=false; getAttempt(); await persist(); render(); }
@@ -308,6 +350,7 @@ const actions = {
   details:el=>{ state.detailOrigin=state.route==='collection'?'collection':'library'; go('details',{bookId:el.dataset.id}); },
   'detail-back':()=>go(state.detailOrigin), 'reader-back':()=>go('details'),
   start:()=>startReading(),
+  'start-activities':()=>startReading(false, book().pages.findIndex(page => page.type === 'activity')),
   restart:()=>confirmDialog('Start again',()=>startReading(true),'Start again'),
   previous:()=>pageTurn(state.page-1), next:()=>pageTurn(state.page+1), page:el=>pageTurn(Number(el.dataset.index)),
   'toggle-nav':()=>{state.navOpen=!state.navOpen;renderNav();},
@@ -329,9 +372,9 @@ const actions = {
   export:()=>exportProfiles(state.profiles.filter(p=>$(`[data-export="${CSS.escape(p.profileId)}"]`)?.checked)),
   'review-import':reviewImport,'commit-import':commitImport,
   'confirm-reset':()=>confirmDialog('Delete reading progress and activity answers for this profile only. Collections and settings are kept.',async()=>{await saveQueue;const snapshot=structuredClone(profile());const cleared={...structuredClone(profile()),readingProgress:[],activityAttempts:[]};await writeRecords([{store:'recovery',value:{key:'before-reset',backup:exportBackup([snapshot])}},{store:'profiles',value:cleared}]);Object.assign(profile(),cleared);render();toast('Progress reset');},'Reset progress'),
-  share:async()=>{const text=summary($('#share-name').value.trim());if(navigator.share) {try {await navigator.share({title:t('Your progress'),text});}catch(err){if(err.name!=='AbortError')throw err;}}else {openDialog('Share progress',`<p>${e(text)}</p>${button('Copy summary','copy-summary')}${button('Download summary','download-summary')}`);}},
-  'copy-summary':async()=>{const text=summary($('#share-name')?.value.trim());try {await navigator.clipboard.writeText(text);toast('Summary copied');}catch {download(text,'reading-progress.txt','text/plain');}},
-  'download-summary':()=>download(summary($('#share-name')?.value.trim()),'reading-progress.txt','text/plain'),
+  share:async()=>{const text=summary();if(navigator.share) {try {await navigator.share({title:t('Your progress'),text});}catch(err){if(err.name!=='AbortError')throw err;}}else {openDialog('Share progress',`<p class="share-preview">${e(text)}</p>${button('Copy summary','copy-summary')}${button('Download summary','download-summary')}`);}},
+  'copy-summary':async()=>{const text=summary();try {await navigator.clipboard.writeText(text);toast('Summary copied');}catch {download(text,'reading-progress.txt','text/plain');}},
+  'download-summary':()=>download(summary(),'reading-progress.txt','text/plain'),
   install:async()=>{await installPrompt?.prompt();installPrompt=null;renderHeader();},
   update:async()=>{await saveQueue;if(state.saveError)throw new Error('Save or export your answers before updating.');waitingWorker?.postMessage({type:'ACTIVATE'});},
   unavailable:()=>toast('This book is unavailable. Your progress is kept.')
@@ -341,11 +384,10 @@ document.addEventListener('submit',async event=>{if(event.target.id!=='profile-f
 document.addEventListener('change',async event=>{
   const el=event.target;
   try {
-    if (el.dataset.answer) await setAnswer(el.dataset.answer,el.value);
+    if (el.dataset.answer && !el.matches('textarea, input[type=text]')) await setAnswer(el.dataset.answer,el.value);
     if (el.dataset.filter) {state.filtersOpen=true;profile().preferences.filters[el.dataset.filter]=el.value;await persist();render();}
     if (el.id==='language') {profile().preferences.language=el.value;await persist();render();}
     if (el.id==='animation') {profile().preferences.animation=el.value;await persist();}
-    if (el.name==='avatar') state.avatarChanged=true;
     if (el.id==='import-file') await loadImport(el.files[0]);
     if (el.name==='import-mode') {importPlan=null;$('#conflicts').innerHTML='';}
   }catch(err){report(err);}
@@ -353,7 +395,7 @@ document.addEventListener('change',async event=>{
 document.addEventListener('input',event=>{
   const el=event.target;
   if(el.id==='search') {profile().preferences.filters.search=el.value;const books=filteredBooks();$('#books').innerHTML=books.map(bookCard).join('');$('#book-count').textContent=`${books.length} ${t('books')}`;$('#no-books').hidden=!!books.length;persist().catch(()=>{});}
-  if(el.dataset.answer && el.tagName==='INPUT'&&el.type==='text') setAnswer(el.dataset.answer,el.value).catch(report);
+  if(el.dataset.answer && el.matches('textarea, input[type=text]')) setAnswer(el.dataset.answer,el.value).catch(report);
 });
 document.addEventListener('dragstart',event=>{const target=event.target.closest('[data-word]');if(target)event.dataTransfer.setData('text/plain',target.dataset.word);});
 document.addEventListener('dragover',event=>{const target=event.target.closest('[data-drop]');if(target&&currentPage().activityType==='drag-drop'){event.preventDefault();target.classList.add('drag-over');}});

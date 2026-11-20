@@ -131,7 +131,7 @@ No standalone Edit Profile or Data on this screen. The bottom navigation's My Pr
 ## H. Stats
 
 - Finished books, in-progress books, completed activities, optional per-book results (where scored).
-- `Share progress` creates a concise shareable **summary**: profile display name (user can edit/omit before sharing), count of books completed, activity completions/results and reporting date (if useful).
+- Shared, copied and downloaded progress summaries put the profile display name on the first line, followed by book and activity counts.
 - If Web Share API supported, call it from a direct tap. Otherwise offer `Copy summary` or download text/image only if implemented and tested.
 - Do not expose private answers in the public share summary by default.
 

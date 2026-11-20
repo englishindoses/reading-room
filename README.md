@@ -36,7 +36,7 @@ After **Ready offline** appears, disconnect and reload to use bundled stories an
 - `src/db.js`: IndexedDB and additive migrations; `src/backup.js`: backup validation and conflict planning.
 - `src/content.js`: package loader, supported activity registry, and authored-answer scoring.
 - `src/pages.js`: extensible story, intro, image, audio, and mixed page renderers.
-- `src/avatars.js`: nine character identities, labels, and compatibility mapping for older icon avatars; `assets/avatars/`: offline portrait images and the generation prompt set.
+- `src/avatars.js`: nine imaginative character choices, with compatibility for existing avatars; `assets/avatars/`: offline portrait images and the generation prompt set.
 - `src/i18n.js`: English/Brazilian Portuguese UI dictionary; book text remains as authored.
 - `src/styles.css`: responsive layouts and shared Kids/Teens/Adults theme tokens.
 - `content/catalogue.json`: book registry; each folder contains its `book.json` and cover asset.
@@ -71,4 +71,4 @@ The first release can ship with a *small sample* of book/activity content, but t
 
 ## Current story
 
-The only bundled book is **Sam and the Red Bag**, for **Teens, Level 1**. Its 14 illustrated pages preserve the text and order of the supplied revised A4 PDF. Optimized WebP copies of the cover and illustrations are shipped; print PDFs and original artwork stay outside the app build. The previous placeholder packages have been removed; historical user records are retained. No exercises have been added to this story.
+The only bundled book is **Sam and the Red Bag**, for **Teens, Level 1**. Its 14 illustrated pages preserve the text and order of the supplied revised A4 PDF. Optimized WebP copies of the cover and illustrations are shipped; print PDFs and original artwork stay outside the app build. The previous placeholder packages have been removed; historical user records are retained. Six activities follow the story: middle, beginning and ending sounds, vocabulary matching, true or false, and seven personal questions.

@@ -1,4 +1,8 @@
 export const pt = {
+  'Do activities': 'Fazer atividades', 'Current avatar': 'Avatar atual',
+  'Pocket Dragon': 'Dragão de Bolso', 'Cloud Sheep': 'Ovelha das Nuvens', 'Mushroom Sprite': 'Duende Cogumelo',
+  'Moon Moth': 'Mariposa Lunar', 'Space Fox': 'Raposa Espacial', 'Cassette Robot': 'Robô Cassete',
+  'Mapmaker Owl': 'Coruja Cartógrafa', 'Moss Golem': 'Golem de Musgo', 'Pearl Nautilus': 'Náutilo Pérola',
   'Girl with natural hair puffs': 'Menina com cabelos crespos em dois coques',
   'Boy with round teal glasses': 'Menino com óculos redondos verdes',
   'Child with ginger curls and freckles': 'Criança ruiva com cachos e sardas',
@@ -31,7 +35,7 @@ export const pt = {
   'Rename': 'Renomear', 'Delete collection': 'Excluir coleção', 'Remove': 'Remover', 'Move up': 'Mover para cima', 'Move down': 'Mover para baixo', 'Added to collection': 'Adicionado à coleção',
   'Stats': 'Estatísticas', 'Check your stats': 'Veja suas estatísticas', 'Settings': 'Configurações', 'Switch profile': 'Trocar perfil', 'Open': 'Abrir', 'New profile': 'Novo perfil',
   'Your progress': 'Seu progresso', 'Books finished': 'Livros concluídos', 'Books in progress': 'Livros em andamento', 'Activities checked': 'Atividades verificadas', 'Activity results': 'Resultados das atividades', 'No results yet. Read a story and try an activity.': 'Ainda não há resultados. Leia uma história e faça uma atividade.',
-  'Share progress': 'Compartilhar progresso', 'Copy summary': 'Copiar resumo', 'Download summary': 'Baixar resumo', 'Name in shared summary (optional)': 'Nome no resumo compartilhado (opcional)', 'Revealed': 'Revelado',
+  'Share progress': 'Compartilhar progresso', 'Copy summary': 'Copiar resumo', 'Download summary': 'Baixar resumo', 'Revealed': 'Revelado',
   'Reading': 'Leitura', 'Page turning': 'Virada de página', 'Follow device preference': 'Seguir preferência do dispositivo', 'Book-style': 'Estilo de livro', 'Simple flip': 'Transição simples', 'None': 'Nenhuma',
   'Appearance & language': 'Aparência e idioma', 'Interface language': 'Idioma da interface', 'Story text and activities stay in their original language.': 'Histórias e atividades permanecem no idioma original.',
   'Edit profile': 'Editar perfil', 'Data & backup': 'Dados e backup', 'Reset progress': 'Apagar progresso', 'Export backup': 'Exportar backup', 'Import backup': 'Importar backup', 'Export selected profiles': 'Exportar perfis selecionados',
