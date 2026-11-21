@@ -63,6 +63,8 @@ restore(attemptId)              // continue unfinished attempt
 
 ## 4. IndexedDB object-store proposal
 
+The store layout below records the original design. The shipped schema is defined in `src/db.js` and summarized in `IMPLEMENTATION.md`. The current book package and its activity definitions live in `content/sam-and-the-red-bag/book.json`.
+
 Database name: `reading-app`, versioned migrations. Suggested stores:
 
 | Store | Key | Contents |

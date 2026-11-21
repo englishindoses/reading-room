@@ -73,4 +73,4 @@ Use these as manual end-to-end scenarios plus automated tests where practical. *
 
 ## Minimum developer demo
 
-Show two test profiles with distinct settings/progress, two sample books with different structures, at least one scorable activity, a collection, a local backup that can be imported, offline reload, and an update migration test using populated fixture data. Any activity type not yet implemented must be explicitly listed as pending, not silently presented as completed.
+Show two test profiles with distinct settings and progress, Sam and the Red Bag with its illustrations and at least one scorable activity, a collection, a backup import, an offline reload, and an update migration with populated fixture data. Use dedicated fixtures when verifying supported layouts and activity types the bundled book does not exercise. Record pending checks in IMPLEMENTATION.md.

@@ -1,4 +1,6 @@
-# Codex implementation handoff — paste this when ready to build
+# Original Codex implementation handoff
+
+This brief records the initial build plan. Its two-sample plan predates the current bundled book, Sam and the Red Bag. See [README.md](README.md) for contributor commands and [IMPLEMENTATION.md](IMPLEMENTATION.md) for current scope and verification.
 
 > Build the installable offline-first reading practice PWA described in the attached design documents. **Before coding**, read `PRODUCT_SPEC.md`, `SCREEN_FLOWS.md`, `CONTENT_AND_DATA.md`, and `ACCEPTANCE_TESTS.md` completely. Treat firm product decisions as requirements and `PROPOSED` choices as editable defaults. Avoid asking the product owner to reconfirm settled details. Only ask a question if a true blocker exists; otherwise document a reasoned implementation choice.
 >

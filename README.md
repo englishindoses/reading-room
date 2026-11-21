@@ -61,14 +61,16 @@ The public repository deploys to **https://englishindoses.github.io/reading-room
 2. `SCREEN_FLOWS.md` — screen-by-screen layout, navigation and interactions.
 3. `CONTENT_AND_DATA.md` — editable book content model, activity interface, IndexedDB data, backup semantics.
 4. `ACCEPTANCE_TESTS.md` — what must work before release.
-5. `CODEX_START_HERE.md` — ready-to-paste implementation brief and build sequence.
+5. [IMPLEMENTATION.md](IMPLEMENTATION.md) covers shipped scope, verification and open release checks.
+6. [PRODUCT.md](PRODUCT.md) and [DESIGN.md](DESIGN.md) describe the product and visual system.
+7. [CODEX_START_HERE.md](CODEX_START_HERE.md) records the original implementation brief.
 
 ## Key rule
 
-The user authorized implementation after this design handoff. Proposed defaults are marked `PROPOSED` and can be changed later. Avoid reopening settled decisions unless technically impossible or contradictory.
+The specification documents describe requirements and editable defaults marked `PROPOSED`. See [IMPLEMENTATION.md](IMPLEMENTATION.md) for current scope and open checks.
 
 The first release can ship with a *small sample* of book/activity content, but the app structure must support books with bespoke page sequences and reusable activity components. No server, accounts, subscriptions or cloud sync in v1.
 
 ## Current story
 
-The only bundled book is **Sam and the Red Bag**, for **Teens, Level 1**. Its 14 illustrated pages preserve the text and order of the supplied revised A4 PDF. Optimized WebP copies of the cover and illustrations are shipped; print PDFs and original artwork stay outside the app build. The previous placeholder packages have been removed; historical user records are retained. Six activities follow the story: middle, beginning and ending sounds, vocabulary matching, true or false, and seven personal questions.
+The only bundled book is **Sam and the Red Bag**, for **Teens, Level 1**. Its 14 illustrated pages follow the revised A4 edition and lead into six activities. The Git repository includes the print PDFs, original illustrations, previews, prompts and printing instructions in `Sam and the Red Bag/`. The app build and GitHub Pages use the optimized assets in `content/sam-and-the-red-bag/`. Historical progress from removed placeholder books remains in local profiles.

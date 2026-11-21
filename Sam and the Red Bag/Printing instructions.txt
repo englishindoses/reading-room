@@ -1,0 +1,14 @@
+PRINT THE BOOKLET
+Open 'Sam and the Red Bag - A4 booklet print.pdf'.
+Paper: A4. Orientation: landscape.
+Print all 8 PDF pages, double-sided, flip on the SHORT edge.
+Choose ONE PDF page per sheet side, at actual size (100%).
+The PDF already has two book pages arranged on every side.
+Do not select another booklet or multiple-pages printing mode.
+This uses 4 sheets, with 4 book pages per double-sided sheet.
+Keep the sheets in order, nest them together, fold all sheets down the centre,
+and staple along the fold. Finished book size: A5.
+Front and back covers will be on the outside.
+
+'Sam and the Red Bag - A4 revised.pdf' is the regular A4 file:
+front cover, back cover, then story pages 1-14.

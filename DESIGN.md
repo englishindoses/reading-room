@@ -191,7 +191,7 @@ The avatar picker groups nine imaginative gouache characters under Kids, Teens, 
 
 Buttons have a 44px minimum height, 600 weight, and 9px content gap. Primary hover deepens the accent; ordinary hover uses tint. Disabled controls have .45 opacity. Keyboard focus uses a 3px amber outline offset by 4px. Fields have a 1px `line` border and 46px minimum height.
 
-Book cards pair a cover with title, compact metadata, sample badge, and collection action. Cover hover scales to 1.025 over .2s. Answer options use bordered rows with 8px corners, at least 48px tall, and show checked state with tint, an accent border, and a 1px inset accent stroke. Options have 14px padding.
+Book cards pair a cover with title, compact metadata, an optional sample badge, and a collection action. Cover hover scales to 1.025 over .2s. Answer options use bordered rows with 8px corners, at least 48px tall, and show checked state with tint, an accent border, and a 1px inset accent stroke. Options have 14px padding.
 
 The reader dock starts collapsed: main links and page index are hidden while save status and the navigation handle share one centered flex row with an 8px gap at every width. Both have zero margin; status uses automatic width capped at 45% so it cannot overlap the handle. Expanding the dock places status above the handle and reveals horizontal 44px page buttons and the main links; activity pages have a small dot. The handle supports click and vertical swipe. Page controls remain below the paper. On laptop widths, the reader hides the app header and sizes the story illustration to the available viewport.
 
