@@ -39,6 +39,7 @@ Book packages must not require editing a central component for each new book; pa
 - Page types can include `story`, `intro`, `activity`, `image`, `audio`, and `mixed` as needed. Author controls per-page layout; new layout types can be registered.
 - Each page and activity must have a **stable ID** across content updates, so progress and results can be migrated reliably. If an author makes a breaking change, increment `contentVersion` and provide a migration or keep historical results read-only.
 - Assets should be relative to book package paths and include fallback/alt text. Avoid remote-only assets (offline requirement).
+- A story page can use `audio` for its recorded sentence and `wordAudio` for optional pronunciation clips. Each word entry has an authored `label` and a relative `audio` path. Include every clip in the offline cache.
 - Book metadata may support an age/interest tag and an audience list. No mandatory age-verification gate.
 - Preserve existing book IDs after releases. Removed/renamed books must not delete historical profile progress; show an unavailable-book placeholder where appropriate.
 
@@ -79,6 +80,7 @@ Database name: `reading-app`, versioned migrations. Suggested stores:
 
 - `avatar` can use IndexedDB Blob if feasible (with limits/resizing); backup should encode it portably.
 - Do not save every individual interaction/click. Save useful current answers, book position and activity outcomes.
+- Reading progress keeps the most recent overall `pageId` and independent `storyPageId` and `activityPageId` bookmarks when available. Older records can resume from a matching overall page.
 - `status`: not-started (implicit), in-progress, finished. 'Finished' should be derived from book completion, not assuming all exercises scored 100%.
 - Updating a book must not wipe user data; versioned migration should retain unknown/unmatched history where practical.
 - Do not change existing public IDs casually. Index progress by profile and book; index attempts by profile/book/page for efficient stats.

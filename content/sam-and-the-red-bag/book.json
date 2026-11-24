@@ -25,7 +25,9 @@
       "layout": "image-above-text",
       "image": "./page-01.webp",
       "alt": "Sam has a red bag.",
-      "text": "Sam has a red bag."
+      "text": "Sam has a red bag.",
+      "audio": "./audio/page-01.wav",
+      "wordAudio": [{"label":"red","audio":"./audio/word-red.wav"},{"label":"bag","audio":"./audio/word-bag.wav"}]
     },
     {
       "id": "page-02",
@@ -34,7 +36,9 @@
       "layout": "image-above-text",
       "image": "./page-02.webp",
       "alt": "Sam gets on the bus.",
-      "text": "Sam gets on the bus."
+      "text": "Sam gets on the bus.",
+      "audio": "./audio/page-02.wav",
+      "wordAudio": [{"label":"bus","audio":"./audio/word-bus.wav"}]
     },
     {
       "id": "page-03",
@@ -43,7 +47,9 @@
       "layout": "image-above-text",
       "image": "./page-03.webp",
       "alt": "The bus is big.",
-      "text": "The bus is big."
+      "text": "The bus is big.",
+      "audio": "./audio/page-03.wav",
+      "wordAudio": [{"label":"bus","audio":"./audio/word-bus.wav"},{"label":"big","audio":"./audio/word-big.wav"}]
     },
     {
       "id": "page-04",
@@ -52,7 +58,9 @@
       "layout": "image-above-text",
       "image": "./page-04.webp",
       "alt": "Sam sits.",
-      "text": "Sam sits."
+      "text": "Sam sits.",
+      "audio": "./audio/page-04.wav",
+      "wordAudio": [{"label":"sits","audio":"./audio/word-sits.wav"}]
     },
     {
       "id": "page-05",
@@ -61,7 +69,9 @@
       "layout": "image-above-text",
       "image": "./page-05.webp",
       "alt": "The bus stops.",
-      "text": "The bus stops."
+      "text": "The bus stops.",
+      "audio": "./audio/page-05.wav",
+      "wordAudio": [{"label":"bus","audio":"./audio/word-bus.wav"}]
     },
     {
       "id": "page-06",
@@ -70,7 +80,9 @@
       "layout": "image-above-text",
       "image": "./page-06.webp",
       "alt": "Sam gets off the bus.",
-      "text": "Sam gets off the bus."
+      "text": "Sam gets off the bus.",
+      "audio": "./audio/page-06.wav",
+      "wordAudio": [{"label":"bus","audio":"./audio/word-bus.wav"}]
     },
     {
       "id": "page-07",
@@ -79,7 +91,9 @@
       "layout": "image-above-text",
       "image": "./page-07.webp",
       "alt": "The bag is not here.",
-      "text": "The bag is not here."
+      "text": "The bag is not here.",
+      "audio": "./audio/page-07.wav",
+      "wordAudio": [{"label":"bag","audio":"./audio/word-bag.wav"}]
     },
     {
       "id": "page-08",
@@ -88,7 +102,9 @@
       "layout": "image-above-text",
       "image": "./page-08.webp",
       "alt": "A dog has the bag.",
-      "text": "A dog has the bag."
+      "text": "A dog has the bag.",
+      "audio": "./audio/page-08.wav",
+      "wordAudio": [{"label":"bag","audio":"./audio/word-bag.wav"},{"label":"dog","audio":"./audio/word-dog.wav"}]
     },
     {
       "id": "page-09",
@@ -97,7 +113,9 @@
       "layout": "image-above-text",
       "image": "./page-09.webp",
       "alt": "The dog runs.",
-      "text": "The dog runs."
+      "text": "The dog runs.",
+      "audio": "./audio/page-09.wav",
+      "wordAudio": [{"label":"dog","audio":"./audio/word-dog.wav"}]
     },
     {
       "id": "page-10",
@@ -106,7 +124,8 @@
       "layout": "image-above-text",
       "image": "./page-10.webp",
       "alt": "Sam runs and runs.",
-      "text": "Sam runs and runs."
+      "text": "Sam runs and runs.",
+      "audio": "./audio/page-10.wav"
     },
     {
       "id": "page-11",
@@ -115,7 +134,9 @@
       "layout": "image-above-text",
       "image": "./page-11.webp",
       "alt": "The dog sits.",
-      "text": "The dog sits."
+      "text": "The dog sits.",
+      "audio": "./audio/page-11.wav",
+      "wordAudio": [{"label":"sits","audio":"./audio/word-sits.wav"},{"label":"dog","audio":"./audio/word-dog.wav"}]
     },
     {
       "id": "page-12",
@@ -124,7 +145,9 @@
       "layout": "image-above-text",
       "image": "./page-12.webp",
       "alt": "Sam gets the bag.",
-      "text": "Sam gets the bag."
+      "text": "Sam gets the bag.",
+      "audio": "./audio/page-12.wav",
+      "wordAudio": [{"label":"bag","audio":"./audio/word-bag.wav"}]
     },
     {
       "id": "page-13",
@@ -133,7 +156,9 @@
       "layout": "image-above-text",
       "image": "./page-13.webp",
       "alt": "There is ham in the bag.",
-      "text": "There is ham in the bag."
+      "text": "There is ham in the bag.",
+      "audio": "./audio/page-13.wav",
+      "wordAudio": [{"label":"bag","audio":"./audio/word-bag.wav"},{"label":"ham","audio":"./audio/word-ham.wav"}]
     },
     {
       "id": "page-14",
@@ -142,7 +167,9 @@
       "layout": "image-above-text",
       "image": "./page-14.webp",
       "alt": "Sam and the dog eat the ham.",
-      "text": "Sam and the dog eat the ham."
+      "text": "Sam and the dog eat the ham.",
+      "audio": "./audio/page-14.wav",
+      "wordAudio": [{"label":"dog","audio":"./audio/word-dog.wav"},{"label":"ham","audio":"./audio/word-ham.wav"}]
     },
     {
       "id": "middle-sound",

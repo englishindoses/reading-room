@@ -6,9 +6,11 @@ export async function loadCatalogue() {
     const response = await fetch(path);
     if (!response.ok) throw new Error('A book could not be downloaded. Please reload while online.');
     const book = await response.json();
-    book.cover = new URL(book.cover, new URL(path, location.href)).href;
+    const base = new URL(path, location.href);
+    book.cover = new URL(book.cover, base).href;
     for (const page of book.pages) {
-      for (const field of ['image', 'audio']) if (page[field]) page[field] = new URL(page[field], new URL(path, location.href)).href;
+      for (const field of ['image', 'audio']) if (page[field]) page[field] = new URL(page[field], base).href;
+      for (const word of page.wordAudio || []) word.audio = new URL(word.audio, base).href;
     }
     return book;
   }));

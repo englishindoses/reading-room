@@ -16,6 +16,7 @@ async function reloadLibrary(){
 async function screenshot(file,width,height){await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<600});await pause(150);await evaluate('window.scrollTo(0,0)');const result=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(file,Buffer.from(result.data,'base64'));}
 try {
   await mkdir('.impeccable/review',{recursive:true});
+  await mkdir('test-results',{recursive:true});
   await send('Page.navigate',{url:'http://127.0.0.1:4173/'});
   await test('first launch creates a local profile',async()=>{await until(`!!document.querySelector('#profile-form')`);await until(`Array.from(document.querySelectorAll('.avatar-options img')).length===9 && Array.from(document.querySelectorAll('.avatar-options img')).every(img=>img.complete && img.naturalWidth>0)`);await click('input[name=avatar][value=pearl-nautilus]');await screenshot('.impeccable/review/avatar-picker-mobile.png',390,1000);await fill('[name=name]','Alex');await fill('[name=audience]','teens');await click('#profile-form [type=submit]');await until(`!!document.querySelector('#books')`);assert.match(await evaluate('document.body.innerText'),/Welcome back, Alex/);assert.equal(await evaluate(`document.querySelector('#header .avatar img').getAttribute('src')`),'./assets/avatars/pearl-nautilus.webp');});
   await test('all bundled files are ready offline',async()=>{await until(`document.querySelector('.offline-status').textContent.includes('Ready offline')`,20000);});
@@ -133,6 +134,43 @@ try {
         next.top >= bottom && next.bottom <= innerHeight;
     })()`), 'Enlarged text should scroll independently of the page controls');
     await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+  });
+  await test('page picker and library resume keep separate story and activity positions',async()=>{
+    await click('.reader-page-count');
+    assert.equal(await evaluate(`document.querySelector('#page-picker:popover-open [aria-current=page]').textContent`), '14');
+    assert.equal(await evaluate(`document.querySelectorAll('#page-picker .picker-activities button').length`), 6);
+    await screenshot('test-results/page-picker-mobile.png',390,844);
+    await click('#page-picker [data-index="7"]');
+    assert.equal(await evaluate(`document.querySelector('.reader-page-count').textContent`), 'Page 8/14');
+    await click('.reader-page-count');
+    await click('#page-picker [data-index="15"]');
+    await persisted();
+    await route('reader-back');
+    await route('detail-back');
+    await reloadLibrary();
+    assert.match(await evaluate(`document.querySelector('[data-action=continue-reading]').textContent`), /Continue story · page 8/);
+    await route('continue-reading');
+    assert.equal(await evaluate(`document.querySelector('.reader-page-count').textContent`), 'Page 8/14');
+    await route('reader-back');
+    await route('start-activities');
+    assert.equal(await evaluate(`document.querySelector('.reader-paper h1').textContent`), 'Beginning sounds');
+    await click('.reader-page-count');
+    await click('#page-picker [data-index="7"]');
+  });
+  await test('sentence and word clips play and replay from the offline cache',async()=>{
+    await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});
+    const playing = () => until(`document.querySelector('#reader-audio').currentTime > 0`);
+    assert.equal(await evaluate(`document.querySelector('#reader-audio').paused`), true);
+    await click('.story-audio > button');
+    await playing();
+    await until(`document.querySelector('#reader-audio').ended`);
+    await click('.story-audio > button');
+    await until(`!document.querySelector('#reader-audio').paused && document.querySelector('#reader-audio').currentTime < 1`);
+    await click('.story-audio summary');
+    await click('.story-word-audio button[data-audio$="word-dog.wav"]');
+    await until(`document.querySelector('#reader-audio').currentSrc.endsWith('word-dog.wav') && document.querySelector('#reader-audio').currentTime > 0`);
+    assert.equal(await evaluate(`(async()=>{const src=document.querySelector('#reader-audio').currentSrc;return (await fetch(src,{headers:{Range:'bytes=0-43'}})).status;})()`),206);
+    await send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
   });
   await test('every story illustration works offline',async()=>{
     await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});

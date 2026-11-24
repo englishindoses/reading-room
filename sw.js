@@ -1,4 +1,5 @@
-const VERSION = 'reading-room-assets-v6-reader-layout';
+const VERSION = 'reading-room-assets-v7-narration';
+const audioPath = './content/sam-and-the-red-bag/audio/';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
@@ -31,8 +32,29 @@ const ASSETS = [
   './content/sam-and-the-red-bag/page-11.webp',
   './content/sam-and-the-red-bag/page-12.webp',
   './content/sam-and-the-red-bag/page-13.webp',
-  './content/sam-and-the-red-bag/page-14.webp'
+  './content/sam-and-the-red-bag/page-14.webp',
+  ...Array.from({ length: 14 }, (_, i) => `${audioPath}page-${String(i + 1).padStart(2, '0')}.wav`),
+  ...['red', 'bag', 'bus', 'big', 'sits', 'dog', 'ham'].map(word => `${audioPath}word-${word}.wav`)
 ];
+async function audioRange(cached, range) {
+  const [, first, last] = /^bytes=(\d*)-(\d*)$/.exec(range) || [];
+  const buffer = await cached.arrayBuffer();
+  const size = buffer.byteLength;
+  const start = first ? Number(first) : Math.max(0, size - Number(last));
+  const end = first && last ? Math.min(Number(last), size - 1) : size - 1;
+  if ((!first && !last) || start > end || start >= size) {
+    return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${size}` } });
+  }
+  return new Response(buffer.slice(start, end + 1), {
+    status: 206,
+    headers: {
+      'Content-Type': 'audio/wav',
+      'Accept-Ranges': 'bytes',
+      'Content-Range': `bytes ${start}-${end}/${size}`,
+      'Content-Length': end - start + 1
+    }
+  });
+}
 self.addEventListener('install', event => {
   // Activation waits for explicit user action on updates. No user data is touched.
   event.waitUntil((async () => {
@@ -60,6 +82,8 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const cache = await caches.open(VERSION);
     const cached = await cache.match(event.request);
+    const range = event.request.headers.get('Range');
+    if (cached && range && new URL(event.request.url).pathname.endsWith('.wav')) return audioRange(cached, range);
     if (cached) return cached;
     try { return await fetch(event.request); }
     catch (err) {

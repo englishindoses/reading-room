@@ -27,6 +27,22 @@ const book = () => state.books.find(b => b.id === state.bookId);
 const progress = b => profile()?.readingProgress.find(p => p.bookId === b.id);
 const currentPage = () => book().pages[state.page];
 const storyPages = b => b.pages.filter(page => page.type === 'story');
+function savedPosition(b, record, type) {
+  const key = type === 'story' ? 'storyPageId' : 'activityPageId';
+  const completedStory = type === 'story' && record?.storyCompletedAt ? storyPages(b).at(-1)?.id : undefined;
+  return [record?.[key], record?.pageId, completedStory]
+    .map(pageId => b.pages.findIndex(page => page.id === pageId && page.type === type))
+    .find(index => index >= 0) ?? -1;
+}
+function savePosition(b, record, page) {
+  // Older records stored only the most recent page, regardless of its type.
+  for (const [type, key] of [['story', 'storyPageId'], ['activity', 'activityPageId']]) {
+    const previous = b.pages[savedPosition(b, record, type)];
+    if (page.type === type) record[key] = page.id;
+    else if (previous) record[key] = previous.id;
+  }
+  record.pageId = page.id;
+}
 const field = (label, input) => `<label>${t(label)}${input}</label>`;
 const option = (value, label, selected) => `<option value="${e(value)}" ${String(selected) === String(value) ? 'selected' : ''}>${e(t(label))}</option>`;
 const errorText = err => err instanceof Error ? err.message : String(err);
@@ -75,6 +91,7 @@ function renderNav() {
   if (reading) saveIndicator();
 }
 function render() {
+  $('#reader-audio')?.pause();
   setLocale(profile()?.preferences.language || 'en');
   document.body.dataset.theme = profile()?.audience || 'adults';
   document.body.classList.toggle('is-reading', state.route === 'reader');
@@ -133,9 +150,11 @@ function libraryView() {
   const f = p.preferences.filters;
   const reading = [...p.readingProgress].filter(r => r.status === 'in-progress').sort((a,b)=>(b.updatedAt || '').localeCompare(a.updatedAt || ''));
   const continued = reading.map(r => state.books.find(b => b.id === r.bookId)).find(Boolean);
+  const resumeStory = continued && continued.pages[savedPosition(continued, progress(continued), 'story')];
+  const continueLabel = resumeStory ? `${t('Continue story')} · ${t('Page').toLocaleLowerCase()} ${storyPages(continued).indexOf(resumeStory) + 1}` : t('Continue');
   const levels = [...new Set(state.books.map(b => b.readingLevel))];
   const books = filteredBooks();
-  return `<section class="intro"><h1 class="serif">${t('A little reading. A world to discover.')}</h1><p class="muted">${t('Short stories, at your own pace.')}</p><p class="greeting">${t('Welcome back')}, ${e(p.name)}.</p></section><div class="library-content"><div class="library-main">${continued ? `<section class="continue-section"><img src="${e(continued.cover)}" alt="" width="72" height="96"><div><p class="small muted">${t('Continue reading')}</p><h3>${e(continued.title)}</h3><button data-action="details" data-id="${continued.id}">${t('Continue')}${icon('arrow')}</button></div></section>` : ''}<div class="section-heading"><h2>${t('Browse books')}</h2><span class="book-count" id="book-count">${books.length} ${t('books')}</span></div><div class="search">${icon('search')}<input id="search" type="search" placeholder="${t('Search by title…')}" aria-label="${t('Search books')}" value="${e(f.search || '')}"></div><details class="filter-panel" ${state.filtersOpen ? 'open' : ''}><summary>${icon('settings')} ${t('Filters')}</summary><div class="filter-grid">${field('Audience', `<select data-filter="audience">${option('all','All audiences',f.audience || p.audience)}${[['kids','Kids'],['teens','Teens'],['adults','Adults']].map(([v,l])=>option(v,l,f.audience || p.audience)).join('')}</select>`)}${field('Reading level', `<select data-filter="level">${option('all','All levels',f.level ?? p.preferences.level)}${levels.map(l=>option(l,`${t('Level')} ${l}`,f.level ?? p.preferences.level)).join('')}${option('range','Level range',f.level)}</select>`)}${field('Status', `<select data-filter="status">${option('','All statuses',f.status)}${[['not-started','Not started'],['in-progress','In progress'],['finished','Finished']].map(([v,l])=>option(v,l,f.status)).join('')}</select>`)}${field('Category', `<select data-filter="category">${option('','All categories',f.category)}${[...new Set(state.books.flatMap(b=>b.categories))].map(c=>option(c,c,f.category)).join('')}</select>`)}${field('Series', `<select data-filter="series">${option('','All series',f.series)}${[...new Set(state.books.map(b=>b.seriesId))].map(c=>option(c,c,f.series)).join('')}</select>`)}${field('Sort by', `<select data-filter="sort">${[['title','Title A–Z'],['level-up','Level ascending'],['level-down','Level descending'],['recent','Recently opened'],['status','Status']].map(([v,l])=>option(v,l,f.sort)).join('')}</select>`)}${f.level === 'range' ? `${field('Minimum level', `<input data-filter="min" type="number" min="1" max="99" value="${e(f.min || 1)}">`)}${field('Maximum level', `<input data-filter="max" type="number" min="1" max="99" value="${e(f.max || 99)}">`)}` : ''}</div></details><div class="book-grid" id="books">${books.map(bookCard).join('')}</div><div id="no-books" ${books.length ? 'hidden' : ''} class="empty"><h3>${t('No books match these filters.')}</h3>${button('Clear filters','clear-filters')}</div></div><aside class="library-aside"><h2>${t('Choose a story. Take your time. Make it yours.')}</h2><div class="divider"><p>${t('Saved on this device')}</p><p>${t('Your profile stays on this device. No account needed.')}</p><button class="text-button small" data-action="stats">${t('Check your stats')}${icon('arrow')}</button></div></aside></div>`;
+  return `<section class="intro"><h1 class="serif">${t('A little reading. A world to discover.')}</h1><p class="muted">${t('Short stories, at your own pace.')}</p><p class="greeting">${t('Welcome back')}, ${e(p.name)}.</p></section><div class="library-content"><div class="library-main">${continued ? `<section class="continue-section"><img src="${e(continued.cover)}" alt="" width="72" height="96"><div><p class="small muted">${t('Continue reading')}</p><h3>${e(continued.title)}</h3><button data-action="continue-reading" data-id="${continued.id}">${continueLabel}${icon('arrow')}</button></div></section>` : ''}<div class="section-heading"><h2>${t('Browse books')}</h2><span class="book-count" id="book-count">${books.length} ${t('books')}</span></div><div class="search">${icon('search')}<input id="search" type="search" placeholder="${t('Search by title…')}" aria-label="${t('Search books')}" value="${e(f.search || '')}"></div><details class="filter-panel" ${state.filtersOpen ? 'open' : ''}><summary>${icon('settings')} ${t('Filters')}</summary><div class="filter-grid">${field('Audience', `<select data-filter="audience">${option('all','All audiences',f.audience || p.audience)}${[['kids','Kids'],['teens','Teens'],['adults','Adults']].map(([v,l])=>option(v,l,f.audience || p.audience)).join('')}</select>`)}${field('Reading level', `<select data-filter="level">${option('all','All levels',f.level ?? p.preferences.level)}${levels.map(l=>option(l,`${t('Level')} ${l}`,f.level ?? p.preferences.level)).join('')}${option('range','Level range',f.level)}</select>`)}${field('Status', `<select data-filter="status">${option('','All statuses',f.status)}${[['not-started','Not started'],['in-progress','In progress'],['finished','Finished']].map(([v,l])=>option(v,l,f.status)).join('')}</select>`)}${field('Category', `<select data-filter="category">${option('','All categories',f.category)}${[...new Set(state.books.flatMap(b=>b.categories))].map(c=>option(c,c,f.category)).join('')}</select>`)}${field('Series', `<select data-filter="series">${option('','All series',f.series)}${[...new Set(state.books.map(b=>b.seriesId))].map(c=>option(c,c,f.series)).join('')}</select>`)}${field('Sort by', `<select data-filter="sort">${[['title','Title A–Z'],['level-up','Level ascending'],['level-down','Level descending'],['recent','Recently opened'],['status','Status']].map(([v,l])=>option(v,l,f.sort)).join('')}</select>`)}${f.level === 'range' ? `${field('Minimum level', `<input data-filter="min" type="number" min="1" max="99" value="${e(f.min || 1)}">`)}${field('Maximum level', `<input data-filter="max" type="number" min="1" max="99" value="${e(f.max || 99)}">`)}` : ''}</div></details><div class="book-grid" id="books">${books.map(bookCard).join('')}</div><div id="no-books" ${books.length ? 'hidden' : ''} class="empty"><h3>${t('No books match these filters.')}</h3>${button('Clear filters','clear-filters')}</div></div><aside class="library-aside"><h2>${t('Choose a story. Take your time. Make it yours.')}</h2><div class="divider"><p>${t('Saved on this device')}</p><p>${t('Your profile stays on this device. No account needed.')}</p><button class="text-button small" data-action="stats">${t('Check your stats')}${icon('arrow')}</button></div></aside></div>`;
 }
 function detailView() {
   const b = book(), p = progress(b);
@@ -165,6 +184,25 @@ function activityView(page) {
     return `<fieldset class="question" data-drop="${q.id}"><legend>${e(q.prompt)}</legend>${input}${a.checked || a.revealed ? `<p class="feedback ${!correct && !a.revealed ? 'incorrect' : ''}" role="status">${a.revealed ? `${t('Answer revealed:')} ${e(q.answer)}` : correct ? t('Correct. Well done!') : `${t('Not quite. Try this clue:')} ${e(q.hint)}`}</p>` : ''}</fieldset>`;
   }).join('')}<div class="activity-actions">${button(a.checked ? 'Check again' : 'Check answers','check','primary')}${button('Retry','retry')}${button('See correct answers','reveal','reveal text-button')}</div>`;
 }
+function pagePicker(b) {
+  const groups = [
+    ['Story pages', b.pages.filter(page => page.type !== 'activity')],
+    ['Activities', b.pages.filter(page => page.type === 'activity')]
+  ];
+  return `<section id="page-picker" class="page-picker" popover aria-labelledby="page-picker-title">
+    <div class="dialog-header"><h2 id="page-picker-title">${t('Go to page')}</h2><button class="icon-button" popovertarget="page-picker" popovertargetaction="hide" aria-label="${t('Close')}">${icon('close')}</button></div>
+    ${groups.filter(([, pages]) => pages.length).map(([label, pages]) => `
+      <h3>${t(label)}</h3><div class="${label === 'Activities' ? 'picker-activities' : 'picker-pages'}">
+        ${pages.map((page, i) => {
+          const index = b.pages.indexOf(page);
+          const active = index === state.page;
+          const number = page.type === 'story' ? storyPages(b).indexOf(page) + 1 : i + 1;
+          const text = page.type === 'story' ? number : e(page.title);
+          return `<button class="secondary${active ? ' active' : ''}" data-action="pick-page" data-index="${index}" ${active ? 'aria-current="page" autofocus' : ''} ${page.type === 'story' ? `aria-label="${t('Page')} ${number}"` : ''}>${text}</button>`;
+        }).join('')}
+      </div>`).join('')}
+  </section>`;
+}
 function readerView() {
   const b = book();
   const top = `<div class="reader-top">${backButton('reader-back')}<span class="reader-title">${e(b.title)}</span></div>`;
@@ -181,7 +219,7 @@ function readerView() {
   const count = `${t('Page')} ${numberedPages.indexOf(page) + 1}/${numberedPages.length}`;
   const nextLabel = isStory && page === numberedPages.at(-1) ? 'Finish story' :
     state.page === b.pages.length - 1 ? 'Finish book' : 'Next';
-  return `<section class="reader${isStory ? ' reader-story' : ''}">${top}<article tabindex="-1" aria-labelledby="reader-page-count" class="reader-paper ${page.type} ${state.pageDirection && mode !== 'none' ? `animate-${mode} ${state.pageDirection}` : ''}">${page.type === 'activity' ? activityView(page) : renderContentPage(page)}<p class="reader-page-count" id="reader-page-count">${count}</p></article><div class="reader-controls"><button class="secondary" data-action="previous" ${state.page === 0 ? 'disabled' : ''}>${icon('back')}${t('Previous')}</button><button class="primary" data-action="next">${t(nextLabel)}${icon('arrow')}</button></div></section>`;
+  return `<section class="reader${isStory ? ' reader-story' : ''}">${top}<article tabindex="-1" aria-label="${e(count)}" class="reader-paper ${page.type}${isStory && page.audio ? ' narrated' : ''} ${state.pageDirection && mode !== 'none' ? `animate-${mode} ${state.pageDirection}` : ''}">${page.type === 'activity' ? activityView(page) : renderContentPage(page)}<button class="reader-page-count" popovertarget="page-picker">${count}${icon('down')}</button></article><div class="reader-controls"><button class="secondary" data-action="previous" ${state.page === 0 ? 'disabled' : ''}>${icon('back')}${t('Previous')}</button><button class="primary" data-action="next">${t(nextLabel)}${icon('arrow')}</button></div>${pagePicker(b)}</section>`;
 }
 function collectionsView() {
   return `<div class="narrow"><div class="section-heading page-title"><h1>${t('My Collections')}</h1>${button('New collection','new-collection','primary small')}</div>${profile().collections.length ? `<div class="shelf-list">${profile().collections.map(c=>`<button class="shelf-row" data-action="collection" data-id="${c.collectionId}"><span class="row"><span class="shelf-icon">${icon('collection')}</span><span><strong>${e(c.name)}</strong><br><span class="small muted">${c.bookIds.length} ${t('books')}</span></span></span>${icon('arrow')}</button>`).join('')}</div>` : `<section class="empty"><h2 class="serif">${t('A shelf of your own.')}</h2><p>${t('Keep the stories you want to come back to together.')}</p></section>`}</div>`;
@@ -264,11 +302,15 @@ async function startReading(restart = false, targetIndex = -1) {
   const b=book(); let r=progress(b);
   if (!r || restart) {
     const fresh={profileId:profile().profileId,bookId:b.id,pageId:b.pages[0].id,status:'in-progress',runId:id(),updatedAt:new Date().toISOString(),contentVersion:b.contentVersion};
-    if (r) Object.assign(r,fresh); else { r=fresh; profile().readingProgress.push(r); }
+    if (r) {
+      delete r.storyPageId;
+      delete r.activityPageId;
+      Object.assign(r,fresh);
+    } else { r=fresh; profile().readingProgress.push(r); }
   }
   const savedIndex = b.pages.findIndex(p => p.id === r.pageId);
   state.page = targetIndex >= 0 ? targetIndex : Math.max(0, savedIndex);
-  r.pageId = currentPage().id;
+  savePosition(b, r, currentPage());
   r.contentVersion = b.contentVersion;
   r.updatedAt=new Date().toISOString();
   const saving = persist();
@@ -305,7 +347,7 @@ async function pageTurn(index, completeStory = false) {
     state.finished = false;
     state.storyComplete = false;
     state.resumePrompt = true;
-    r.pageId = currentPage().id;
+    savePosition(b, r, currentPage());
   }
   r.updatedAt = now;
   const saving = persist();
@@ -371,13 +413,40 @@ const actions = {
   details:el=>{ state.detailOrigin=state.route==='collection'?'collection':'library'; go('details',{bookId:el.dataset.id}); },
   'detail-back':()=>go(state.detailOrigin), 'reader-back':()=>go('details'),
   start:()=>startReading(),
-  'start-activities':()=>startReading(false, book().pages.findIndex(page => page.type === 'activity')),
+  'continue-reading':el=>{
+    state.bookId = el.dataset.id;
+    state.detailOrigin = 'library';
+    return startReading(false, savedPosition(book(), progress(book()), 'story'));
+  },
+  'start-activities':()=>{
+    const b = book();
+    const saved = savedPosition(b, progress(b), 'activity');
+    return startReading(false, saved >= 0 ? saved : b.pages.findIndex(page => page.type === 'activity'));
+  },
   restart:()=>confirmDialog('Start again',()=>startReading(true),'Start again'),
   previous:()=>pageTurn(state.page-1),
   next:()=>currentPage() === storyPages(book()).at(-1) ? pageTurn(state.page,true) : pageTurn(state.page+1),
-  'after-story':()=>pageTurn(state.page+1),
+  'after-story':()=>{
+    const b = book(), next = state.page + 1;
+    const saved = savedPosition(b, progress(b), 'activity');
+    return pageTurn(b.pages[next]?.type === 'activity' && saved >= next ? saved : next);
+  },
   'reread-story':()=>pageTurn(book().pages.findIndex(page => page.type === 'story')),
   page:el=>pageTurn(Number(el.dataset.index)),
+  'pick-page':el=>{
+    $('#page-picker').hidePopover();
+    return pageTurn(Number(el.dataset.index));
+  },
+  'play-narration':async el=>{
+    const player = $('#reader-audio');
+    player.pause();
+    if (player.src !== el.dataset.audio) player.src = el.dataset.audio;
+    else player.currentTime = 0;
+    try { await player.play(); }
+    catch (err) {
+      if (err.name !== 'AbortError' && player.isConnected) toast('Audio could not play. Tap to try again.');
+    }
+  },
   'toggle-nav':()=>{state.navOpen=!state.navOpen;renderNav();},
   'resume-answers':()=>{state.resumePrompt=false;render();},
   retry:()=>{const a=getAttempt(); if (Object.keys(a.answers).length) confirmDialog('Start again',retryActivity,'Retry'); else return retryActivity();},

@@ -18,6 +18,7 @@ const paths = {
   close: '<path d="m6 6 12 12M6 18 18 6"/>',
   up: '<path d="m5 15 7-7 7 7"/>',
   down: '<path d="m5 9 7 7 7-7"/>',
+  volume: '<path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/>',
   share: '<path d="M12 16V3m-5 5 5-5 5 5M5 12H3v9h18v-9h-2"/>',
   wifi: '<path d="M2 8a16 16 0 0 1 20 0M5 12a11 11 0 0 1 14 0m-11 4a6 6 0 0 1 8 0"/><circle cx="12" cy="20" r=".5"/>',
 };
