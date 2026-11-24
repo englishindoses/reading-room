@@ -1,4 +1,4 @@
-const VERSION = 'reading-room-assets-v7-narration';
+const VERSION = 'reading-room-assets-v8-reading-settings';
 const audioPath = './content/sam-and-the-red-bag/audio/';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',

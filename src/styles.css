@@ -290,6 +290,8 @@ select:focus { border-color: var(--accent); }
 }
 .reader-top { margin-bottom: 8px; }
 .reader-title { overflow-wrap: anywhere; }
+.reader-toolbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; }
+.reader-settings-button { min-width: 44px; padding-inline: 8px; font-size: 1rem; }
 .reader-story, .reader-ending { max-width: 32rem; }
 .reader-story {
   display: grid;
@@ -309,8 +311,11 @@ select:focus { border-color: var(--accent); }
 .reader-paper.story .page-image { margin-bottom: 12px; }
 .reader-paper.story .image-below-text .page-image { margin: 12px 0 0; }
 .reader-paper.story .page-image img { max-height: min(54dvh, 31rem); }
-.reader-paper.story .story-text { margin: 0 auto; line-height: 1.5; text-align: center; }
+.reader-paper.story .story-text { margin: 0 auto; line-height: 1.5; text-align: center; overflow-wrap: anywhere; }
 .reader-paper.story .image-beside-text .story-text { margin: auto 0; text-align: start; }
+.reader-paper[data-story-size="large"] .story-text { font-size: 1.75rem; }
+.reader-paper[data-story-size="extra-large"] .story-text { font-size: 2.125rem; }
+.reader-paper.story[data-story-spacing="roomy"] .story-text { line-height: 1.9; word-spacing: .1em; }
 .reader-page-count {
   align-self: flex-end;
   display: flex;
@@ -340,7 +345,7 @@ select:focus { border-color: var(--accent); }
   font-weight: 600;
 }
 .story-audio button { font-size: .875rem; }
-.page-picker {
+.page-picker, .reader-settings {
   width: min(calc(100% - 32px), 30rem);
   max-height: calc(100dvh - 32px);
   overflow: auto;
@@ -352,7 +357,9 @@ select:focus { border-color: var(--accent); }
   box-shadow: var(--shadow);
 }
 .page-picker h3 { margin: 16px 0 8px; font-size: 1rem; }
-.page-picker .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.page-picker .dialog-header, .reader-settings .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.reader-settings { width: min(calc(100% - 32px), 22rem); }
+.reader-settings label { display: grid; gap: 6px; margin: 12px 0 0; }
 .picker-pages, .picker-activities { display: grid; gap: 8px; }
 .picker-pages { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); }
 .picker-pages button { padding-inline: 4px; }

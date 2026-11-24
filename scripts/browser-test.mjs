@@ -181,6 +181,59 @@ try {
     }
     await send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
   });
+  await test('in-reader settings persist and arrows turn only story pages',async()=>{
+    const press = async key => {
+      const code = {ArrowLeft:37, ArrowRight:39}[key];
+      await send('Input.dispatchKeyEvent',{type:'rawKeyDown',key,code:key,windowsVirtualKeyCode:code});
+      await send('Input.dispatchKeyEvent',{type:'keyUp',key,code:key,windowsVirtualKeyCode:code});
+    };
+    const count = () => evaluate(`document.querySelector('.reader-page-count').textContent`);
+    await route('toggle-nav');
+    await click('.reader-settings-button');
+    assert.ok(await evaluate(`!!document.querySelector('#reader-settings:popover-open')`));
+    await press('ArrowLeft');
+    assert.equal(await count(), 'Page 14/14');
+    await fill('#story-size','extra-large');
+    await fill('#story-spacing','roomy');
+    await fill('#animation','none');
+    await persisted();
+    await screenshot('test-results/reader-settings-mobile.png',390,844);
+    await click('#reader-settings [popovertargetaction=hide]');
+    await send('Emulation.setDeviceMetricsOverride',{width:320,height:400,deviceScaleFactor:1,mobile:true});
+    assert.ok(await evaluate(`(() => {
+      const sentence = document.querySelector('#story-sentence');
+      const style = getComputedStyle(sentence);
+      return parseFloat(style.fontSize) >= 32 && parseFloat(style.lineHeight) > 60 &&
+        sentence.scrollWidth <= sentence.clientWidth &&
+        document.querySelector('[data-action=next]').getBoundingClientRect().bottom <= innerHeight;
+    })()`));
+    await click('.reader-page-count');
+    await press('ArrowLeft');
+    assert.equal(await count(), 'Page 14/14');
+    await click('#page-picker [popovertargetaction=hide]');
+    await press('ArrowLeft');
+    assert.equal(await count(), 'Page 13/14');
+    assert.ok(await evaluate(`document.activeElement.matches('.reader-paper[aria-label="Page 13/14"][aria-describedby="story-sentence"]') && !document.activeElement.classList.contains('animate-book')`));
+    await press('ArrowRight');
+    assert.equal(await count(), 'Page 14/14');
+    await press('ArrowRight');
+    assert.equal(await count(), 'Page 14/14');
+    await persisted();
+    await route('reader-back');
+    await route('detail-back');
+    await reloadLibrary();
+    await route('continue-reading');
+    await click('.reader-settings-button');
+    assert.deepEqual(await evaluate(`['story-size','story-spacing','animation'].map(id=>document.getElementById(id).value)`), ['extra-large','roomy','none']);
+    await click('#reader-settings [popovertargetaction=hide]');
+    await click('.reader-page-count');
+    await click('#page-picker [data-index="19"]');
+    await fill('textarea[data-answer=q1]','Red bag');
+    await evaluate(`(() => {const answer=document.querySelector('textarea[data-answer=q1]');answer.focus();answer.setSelectionRange(7,7);})()`);
+    await press('ArrowLeft');
+    assert.equal(await evaluate(`document.activeElement.selectionStart`), 6);
+    assert.equal(await count(), 'Page 20/20');
+  });
   await test('a synchronous invalid write aborts the complete transaction',async()=>{
     const result=await evaluate(`(async()=>{const db=await import('./src/db.js');try{await db.writeRecords([{store:'appMeta',value:{key:'must-rollback',value:'bad'}},{store:'profiles',value:{name:'missing key'}}]);}catch{}return (await db.readAll('appMeta')).some(r=>r.key==='must-rollback');})()`);assert.equal(result,false);
   });

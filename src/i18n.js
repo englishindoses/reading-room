@@ -2,6 +2,8 @@ export const pt = {
   'Do activities': 'Fazer atividades', 'Current avatar': 'Avatar atual',
   'Finish story': 'Concluir história', 'Story complete': 'História concluída', 'Book details': 'Detalhes do livro',
   'Continue story': 'Continuar história', 'Story pages': 'Páginas da história', 'Go to page': 'Ir para a página', 'Activities': 'Atividades',
+  'Reading settings': 'Configurações de leitura', 'Text size': 'Tamanho do texto', 'Text spacing': 'Espaçamento do texto',
+  'Standard': 'Padrão', 'Large': 'Grande', 'Extra large': 'Muito grande', 'Roomy': 'Amplo',
   'Hear sentence': 'Ouvir frase', 'Hear words': 'Ouvir palavras', 'Audio could not play. Tap to try again.': 'Não foi possível reproduzir o áudio. Toque para tentar novamente.',
   'Pocket Dragon': 'Dragão de Bolso', 'Cloud Sheep': 'Ovelha das Nuvens', 'Mushroom Sprite': 'Duende Cogumelo',
   'Moon Moth': 'Mariposa Lunar', 'Space Fox': 'Raposa Espacial', 'Cassette Robot': 'Robô Cassete',

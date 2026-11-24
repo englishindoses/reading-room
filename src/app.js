@@ -203,6 +203,22 @@ function pagePicker(b) {
       </div>`).join('')}
   </section>`;
 }
+function readingSelect(id, label, choices, selected) {
+  return field(label, `<select id="${id}">${choices.map(([value, title]) => option(value, title, selected)).join('')}</select>`);
+}
+function animationSetting(selected) {
+  return readingSelect('animation', 'Page turning', [
+    ['system', 'Follow device preference'], ['book', 'Book-style'], ['flip', 'Simple flip'], ['none', 'None']
+  ], selected);
+}
+function readerSettings(prefs) {
+  return `<section id="reader-settings" class="reader-settings" popover aria-labelledby="reader-settings-title">
+    <div class="dialog-header"><h2 id="reader-settings-title">${t('Reading settings')}</h2><button class="icon-button" popovertarget="reader-settings" popovertargetaction="hide" aria-label="${t('Close')}">${icon('close')}</button></div>
+    ${readingSelect('story-size', 'Text size', [['standard', 'Standard'], ['large', 'Large'], ['extra-large', 'Extra large']], prefs.storySize ?? 'standard')}
+    ${readingSelect('story-spacing', 'Text spacing', [['standard', 'Standard'], ['roomy', 'Roomy']], prefs.storySpacing ?? 'standard')}
+    ${animationSetting(prefs.animation)}
+  </section>`;
+}
 function readerView() {
   const b = book();
   const top = `<div class="reader-top">${backButton('reader-back')}<span class="reader-title">${e(b.title)}</span></div>`;
@@ -212,14 +228,16 @@ function readerView() {
   }
   if (state.finished) return `<section class="reader"><div class="reader-paper finished-page"><span class="large-check">${icon('check')}</span><h1>${t('Book finished')}</h1><p>${e(b.title)}</p><p class="muted">${t('A little further, one page at a time.')}</p><div class="actions">${button('View results','stats','primary')}${button('Back to library','library')}</div></div></section>`;
   const page = currentPage();
-  let mode = profile().preferences.animation;
+  const prefs = profile().preferences;
+  let mode = prefs.animation;
   if (mode === 'system') mode = 'book';
   const isStory = page.type === 'story';
   const numberedPages = isStory ? storyPages(b) : b.pages;
   const count = `${t('Page')} ${numberedPages.indexOf(page) + 1}/${numberedPages.length}`;
   const nextLabel = isStory && page === numberedPages.at(-1) ? 'Finish story' :
     state.page === b.pages.length - 1 ? 'Finish book' : 'Next';
-  return `<section class="reader${isStory ? ' reader-story' : ''}">${top}<article tabindex="-1" aria-label="${e(count)}" class="reader-paper ${page.type}${isStory && page.audio ? ' narrated' : ''} ${state.pageDirection && mode !== 'none' ? `animate-${mode} ${state.pageDirection}` : ''}">${page.type === 'activity' ? activityView(page) : renderContentPage(page)}<button class="reader-page-count" popovertarget="page-picker">${count}${icon('down')}</button></article><div class="reader-controls"><button class="secondary" data-action="previous" ${state.page === 0 ? 'disabled' : ''}>${icon('back')}${t('Previous')}</button><button class="primary" data-action="next">${t(nextLabel)}${icon('arrow')}</button></div>${pagePicker(b)}</section>`;
+  const header = `<div class="reader-top reader-toolbar">${backButton('reader-back')}<span class="reader-title">${e(b.title)}</span><button class="secondary reader-settings-button" popovertarget="reader-settings" aria-label="${t('Reading settings')}">Aa</button></div>`;
+  return `<section class="reader${isStory ? ' reader-story' : ''}">${header}<article tabindex="-1" aria-label="${e(count)}" ${isStory && page.text ? 'aria-describedby="story-sentence"' : ''} data-story-size="${e(prefs.storySize)}" data-story-spacing="${e(prefs.storySpacing)}" class="reader-paper ${page.type}${isStory && page.audio ? ' narrated' : ''} ${state.pageDirection && mode !== 'none' ? `animate-${mode} ${state.pageDirection}` : ''}">${page.type === 'activity' ? activityView(page) : renderContentPage(page)}<button class="reader-page-count" popovertarget="page-picker">${count}${icon('down')}</button></article><div class="reader-controls"><button class="secondary" data-action="previous" ${state.page === 0 ? 'disabled' : ''}>${icon('back')}${t('Previous')}</button><button class="primary" data-action="next">${t(nextLabel)}${icon('arrow')}</button></div>${readerSettings(prefs)}${pagePicker(b)}</section>`;
 }
 function collectionsView() {
   return `<div class="narrow"><div class="section-heading page-title"><h1>${t('My Collections')}</h1>${button('New collection','new-collection','primary small')}</div>${profile().collections.length ? `<div class="shelf-list">${profile().collections.map(c=>`<button class="shelf-row" data-action="collection" data-id="${c.collectionId}"><span class="row"><span class="shelf-icon">${icon('collection')}</span><span><strong>${e(c.name)}</strong><br><span class="small muted">${c.bookIds.length} ${t('books')}</span></span></span>${icon('arrow')}</button>`).join('')}</div>` : `<section class="empty"><h2 class="serif">${t('A shelf of your own.')}</h2><p>${t('Keep the stories you want to come back to together.')}</p></section>`}</div>`;
@@ -248,7 +266,7 @@ function statsView() {
 }
 function settingsView() {
   const p = profile();
-  return `<div class="narrow">${backButton('profile')}<h1>${t('Settings')}</h1><section class="settings-group"><h2>${t('Reading')}</h2>${field('Page turning', `<select id="animation">${[['system','Follow device preference'],['book','Book-style'],['flip','Simple flip'],['none','None']].map(([v,l])=>option(v,l,p.preferences.animation)).join('')}</select>`)}</section><section class="settings-group"><h2>${t('Appearance & language')}</h2>${field('Interface language', `<select id="language">${option('en','English',p.preferences.language)}${option('pt-BR','Português do Brasil',p.preferences.language)}</select>`)}<p class="small muted">${t('Story text and activities stay in their original language.')}</p></section>${[['edit','leaf','Edit profile'],['data','download','Data & backup'],['reset','settings','Reset progress']].map(([action,ic,l])=>`<button class="menu-row" data-action="${action}"><span>${icon(ic)}${t(l)}</span>${icon('arrow')}</button>`).join('')}<p class="small muted divider">Reading Room · 0.1.0<br>${t('Your profile stays on this device. No account needed.')}</p></div>`;
+  return `<div class="narrow">${backButton('profile')}<h1>${t('Settings')}</h1><section class="settings-group"><h2>${t('Reading')}</h2>${animationSetting(p.preferences.animation)}</section><section class="settings-group"><h2>${t('Appearance & language')}</h2>${field('Interface language', `<select id="language">${option('en','English',p.preferences.language)}${option('pt-BR','Português do Brasil',p.preferences.language)}</select>`)}<p class="small muted">${t('Story text and activities stay in their original language.')}</p></section>${[['edit','leaf','Edit profile'],['data','download','Data & backup'],['reset','settings','Reset progress']].map(([action,ic,l])=>`<button class="menu-row" data-action="${action}"><span>${icon(ic)}${t(l)}</span>${icon('arrow')}</button>`).join('')}<p class="small muted divider">Reading Room · 0.1.0<br>${t('Your profile stays on this device. No account needed.')}</p></div>`;
 }
 function dataView() {
   return `<div class="narrow">${backButton('settings')}<h1>${t('Data & backup')}</h1><p class="muted">${t('Your reading data lives on this device. Export a backup to keep a portable copy. Browser data can be removed or lost.')}</p><section class="settings-group"><h2>${t('Export backup')}</h2><div id="export-profiles">${state.profiles.map(p=>`<label class="check-label"><input type="checkbox" data-export="${p.profileId}" ${p.profileId===profile().profileId?'checked':''}>${e(p.name)}</label>`).join('')}</div><div class="actions">${button('Export selected profiles','export','primary')}</div></section><section class="settings-group"><h2>${t('Import backup')}</h2><label>${t('Import backup')}<input type="file" id="import-file" accept=".json,application/json"></label><div id="import-preview"></div></section></div>`;
@@ -474,6 +492,17 @@ const actions = {
   unavailable:()=>toast('This book is unavailable. Your progress is kept.')
 };
 document.addEventListener('click',event=>{const el=event.target.closest('[data-action]');if(!el||el.disabled)return;const fn=actions[el.dataset.action];if(fn)Promise.resolve().then(()=>fn(el)).catch(report);});
+document.addEventListener('keydown', event => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  if (state.route !== 'reader' || state.storyComplete || state.finished || state.navOpen ||
+      event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+      dialog.open || $('[popover]:popover-open') || !window.getSelection()?.isCollapsed ||
+      event.target.closest('input, textarea, select, summary, audio, video, [contenteditable]')) return;
+  const next = state.page + (event.key === 'ArrowRight' ? 1 : -1);
+  if (currentPage().type !== 'story' || book().pages[next]?.type !== 'story') return;
+  event.preventDefault();
+  pageTurn(next).catch(report);
+});
 document.addEventListener('submit',async event=>{if(event.target.id!=='profile-form')return;event.preventDefault();const form=event.target,submit=$('[type=submit]',form);submit.disabled=true;try{await submitProfile(form);}catch(err){const error=$('#form-error',form);error.hidden=false;error.textContent=errorText(err);}finally{submit.disabled=false;}});
 document.addEventListener('change',async event=>{
   const el=event.target;
@@ -482,6 +511,12 @@ document.addEventListener('change',async event=>{
     if (el.dataset.filter) {state.filtersOpen=true;profile().preferences.filters[el.dataset.filter]=el.value;await persist();render();}
     if (el.id==='language') {profile().preferences.language=el.value;await persist();render();}
     if (el.id==='animation') {profile().preferences.animation=el.value;await persist();}
+    if (el.id === 'story-size' || el.id === 'story-spacing') {
+      const key = el.id === 'story-size' ? 'storySize' : 'storySpacing';
+      profile().preferences[key] = el.value;
+      $('.reader-paper').dataset[key] = el.value;
+      await persist();
+    }
     if (el.id==='import-file') await loadImport(el.files[0]);
     if (el.name==='import-mode') {importPlan=null;$('#conflicts').innerHTML='';}
   }catch(err){report(err);}

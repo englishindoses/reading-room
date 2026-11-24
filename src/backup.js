@@ -15,6 +15,9 @@ export function validateBackup(input) {
     if (p.avatar && !validAvatarIds.has(p.avatar) && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(p.avatar)) throw new Error('Invalid avatar image.');
     if (p.pin && (!plain(p.pin) || !text(p.pin.salt) || !/^[a-f0-9]{64}$/.test(p.pin.hash))) throw new Error('Invalid PIN metadata.');
     if (!['en', 'pt-BR'].includes(entry.preferences.language) || !['system', 'book', 'flip', 'none'].includes(entry.preferences.animation) || !Number.isInteger(entry.preferences.level) || entry.preferences.level < 1 || entry.preferences.level > 99 || (entry.preferences.filters && !plain(entry.preferences.filters))) throw new Error('Invalid profile preferences.');
+    const { storySize, storySpacing } = entry.preferences;
+    if ((storySize !== undefined && !['standard', 'large', 'extra-large'].includes(storySize)) ||
+        (storySpacing !== undefined && !['standard', 'roomy'].includes(storySpacing))) throw new Error('Invalid story text preferences.');
     for (const key of arrays) if (!Array.isArray(entry[key]) || entry[key].length > 50000 || entry[key].some(r => !plain(r) || r.profileId !== p.profileId)) throw new Error(`Invalid ${key} records.`);
     for (const r of entry.readingProgress) if (!text(r.bookId) || !text(r.pageId) || !['in-progress', 'finished'].includes(r.status)) throw new Error('Invalid reading progress.');
     for (const r of entry.activityAttempts) if (!text(r.attemptId) || !text(r.bookId) || !text(r.pageId) || !plain(r.answers) || Object.values(r.answers).some(v => typeof v !== 'string' || v.length > 500) || (r.score !== undefined && (!Number.isInteger(r.score) || r.score < 0 || !Number.isInteger(r.total) || r.score > r.total))) throw new Error('Invalid activity attempt.');

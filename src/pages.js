@@ -11,7 +11,7 @@ function textPage(page) {
   const audio = mediaUrl(page.audio);
   const figure = image ? `<figure class="page-image"><img src="${image}" alt="${escape(page.alt || '')}">${page.caption ? `<figcaption>${escape(page.caption)}</figcaption>` : ''}</figure>` : '';
   const narration = page.type === 'story' && audio ? storyAudio(page, audio) : '';
-  const copy = page.text ? `<div class="page-copy"><p class="story-text">${escape(page.text)}</p>${narration}</div>` : narration;
+  const copy = page.text ? `<div class="page-copy"><p class="story-text"${page.type === 'story' ? ' id="story-sentence"' : ''}>${escape(page.text)}</p>${narration}</div>` : narration;
   const heading = page.type === 'story' && /^Page \d+$/i.test(page.title) ? '' :
     `<div class="reader-rule" aria-hidden="true"></div><h1>${escape(page.title)}</h1>`;
   return `${heading}<div class="page-layout ${['image-beside-text','image-below-text'].includes(page.layout) ? page.layout : 'image-above-text'}">${page.layout === 'image-below-text' ? copy+figure : figure+copy}</div>${audio && !narration ? `<div class="page-audio"><audio controls preload="metadata" src="${audio}" aria-label="${escape(page.audioLabel || page.title)}">${t('Audio playback is unavailable in this browser.')}</audio>${page.transcript ? `<details><summary>${t('Audio transcript')}</summary><p class="story-text">${escape(page.transcript)}</p></details>` : ''}</div>` : ''}${page.note ? `<p class="small muted divider">${escape(page.note)}</p>` : ''}`;
