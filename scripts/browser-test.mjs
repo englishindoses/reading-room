@@ -8,6 +8,11 @@ const originalWorker=await readFile('sw.js','utf8');
 async function test(name,fn){try{await fn();results.push({name,pass:true});console.log(`PASS ${name}`);}catch(err){results.push({name,pass:false,error:err.message});console.error(`FAIL ${name}: ${err.message}`);throw err;}}
 const persisted=()=>until(`document.querySelector('#save-state')?.textContent.includes('Saved on this device')`);
 const route=async action=>{await click(`[data-action="${action}"]`);await pause(150);};
+async function reloadLibrary(){
+  await evaluate('window.awaitingLibraryReload = true');
+  await send('Page.reload');
+  await until(`!window.awaitingLibraryReload && !!document.querySelector('#books')`);
+}
 async function screenshot(file,width,height){await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<600});await pause(150);await evaluate('window.scrollTo(0,0)');const result=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(file,Buffer.from(result.data,'base64'));}
 try {
   await mkdir('.impeccable/review',{recursive:true});
@@ -22,7 +27,7 @@ try {
     await click('[data-action=details][data-id=sam-and-the-red-bag]');await route('start');await persisted();
     assert.match(await evaluate('document.body.innerText'),/Sam has a red bag\./);
     await route('toggle-nav');await click('[data-action=page][data-index="13"]');await persisted();
-    await send('Page.reload');await until(`!!document.querySelector('#books')`);
+    await reloadLibrary();
     await click('[data-action=details][data-id=sam-and-the-red-bag]');await route('start');
     assert.match(await evaluate('document.body.innerText'),/Sam and the dog eat the ham\./);
     await send('Emulation.setDeviceMetricsOverride',{width:1366,height:650,deviceScaleFactor:1,mobile:false});
@@ -38,6 +43,26 @@ try {
     assert.ok(bounds.controls <= bounds.dock, JSON.stringify(bounds));
     await click('[data-action=previous]');
     assert.ok(await evaluate(`document.querySelector('.reader-paper').classList.contains('animate-book') && scrollY === 0`));
+    await route('next');
+    await route('next');
+    await persisted();
+    assert.equal(await evaluate(`document.querySelector('.reader-paper h1').textContent`), 'Story complete');
+    await screenshot('.impeccable/review/story-complete-mobile.png',390,844);
+    await route('reread-story');
+    assert.equal(await evaluate(`document.querySelector('.reader-page-count').textContent`), 'Page 1/14');
+    await route('toggle-nav');
+    await click('[data-action=page][data-index="13"]');
+    await route('next');
+    await click('.reader-ending .actions [data-action=reader-back]');
+    assert.match(await evaluate(`document.querySelector('.detail-copy').innerText`), /Story complete/);
+    const reading = await evaluate(`(async()=>{const {readAll}=await import('./src/db.js');return (await readAll('profiles'))[0];})()`);
+    assert.ok(reading.readingProgress[0].storyCompletedAt);
+    assert.equal(reading.readingProgress[0].status, 'in-progress');
+    assert.equal(reading.activityAttempts.length, 0);
+    await route('start');
+    await route('next');
+    await route('after-story');
+    assert.equal(await evaluate(`document.querySelector('.reader-paper h1').textContent`),'Middle sounds');
     await route('reader-back');
     await route('start-activities');
     assert.equal(await evaluate(`document.querySelector('.reader-paper h1').textContent`),'Middle sounds');
@@ -73,11 +98,41 @@ try {
     assert.deepEqual(result,{answers:['saved']});
   });
   await test('offline cold reload restores profile and bundled books',async()=>{
-    await route('library');await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});await send('Page.reload');await until(`!!document.querySelector('#books')`);assert.match(await evaluate('document.body.innerText'),/Jamie/);await until(`document.querySelector('#header .avatar img')?.complete && document.querySelector('#header .avatar img')?.naturalWidth>0`);assert.equal(await evaluate('document.querySelectorAll(".cover").length'),1);await click('[data-action=details][data-id=sam-and-the-red-bag]');await route('start');await until(`document.body.innerText.includes('Sam has a red bag.')`);await send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
+    await route('library');await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});await reloadLibrary();assert.match(await evaluate('document.body.innerText'),/Jamie/);await until(`document.querySelector('#header .avatar img')?.complete && document.querySelector('#header .avatar img')?.naturalWidth>0`);assert.equal(await evaluate('document.querySelectorAll(".cover").length'),1);await click('[data-action=details][data-id=sam-and-the-red-bag]');await route('start');await until(`document.body.innerText.includes('Sam has a red bag.')`);await send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
   });
   await test('reader has no overflow at phone and laptop widths',async()=>{
     for(const width of [320,390,1366]){await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<600});assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'),true);}
-    await screenshot('.impeccable/review/reader-mobile.png',390,844);await screenshot('.impeccable/review/reader-desktop.png',1440,1000);
+    await screenshot('.impeccable/review/reader-mobile.png',390,844);await screenshot('.impeccable/review/reader-desktop.png',1440,900);
+    assert.ok(await evaluate(`(() => {
+      const paper = document.querySelector('.reader-paper');
+      const {width,height} = paper.getBoundingClientRect();
+      return width < height && paper.scrollHeight <= paper.clientHeight;
+    })()`), 'The laptop reader should fit the first story page on portrait paper');
+    await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+    for(let page=1;page<=14;page++){
+      await until(`document.querySelector('.page-image img')?.naturalWidth>0`);
+      assert.equal(await evaluate(`document.querySelector('.reader-page-count').textContent`), `Page ${page}/14`);
+      const fits = await evaluate(`(() => {
+        const paper = document.querySelector('.reader-paper');
+        return paper.scrollHeight <= paper.clientHeight &&
+          document.querySelector('.reader-controls').getBoundingClientRect().bottom <=
+          document.querySelector('.reader-nav').getBoundingClientRect().top;
+      })()`);
+      assert.ok(fits, `Story page ${page} should fit in one phone view`);
+      if(page<14) await route('next');
+    }
+    await send('Emulation.setDeviceMetricsOverride',{width:320,height:400,deviceScaleFactor:1,mobile:true});
+    assert.ok(await evaluate(`(() => {
+      const paper = document.querySelector('.reader-paper');
+      const count = paper.querySelector('.reader-page-count');
+      paper.querySelector('.story-text').style.fontSize = '2.5rem';
+      paper.scrollTop = paper.scrollHeight;
+      const bottom = paper.getBoundingClientRect().bottom;
+      const next = document.querySelector('[data-action=next]').getBoundingClientRect();
+      return paper.scrollTop > 0 && count.getBoundingClientRect().bottom <= bottom &&
+        next.top >= bottom && next.bottom <= innerHeight;
+    })()`), 'Enlarged text should scroll independently of the page controls');
+    await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
   });
   await test('every story illustration works offline',async()=>{
     await send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});

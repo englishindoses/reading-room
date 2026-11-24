@@ -30,7 +30,6 @@ dialog { border:0; background:var(--surface); color:var(--ink); border-radius:14
 }
 /* Keep the save confirmation in the reader's fixed navigation dock. */
 .reader-nav .save-state { margin:0 auto 5px; width:max-content; max-width:calc(100% - 32px); padding:4px 10px; background:var(--surface); border-radius:6px; }
-body:has(.reader-nav:not(.collapsed)) #main { padding-bottom:250px; }
 .page-image { margin:0 0 24px; }
 .page-image img { display:block; width:100%; height:auto; max-height:420px; object-fit:contain; }
 .page-image figcaption { font-size:.875rem; color:var(--muted); margin-top:8px; }
@@ -270,18 +269,54 @@ select:focus { border-color: var(--accent); }
 .reader-paper:focus { outline: none; }
 .reader-paper.backward { --page-angle: 34deg; --page-slide: -24px; transform-origin: right center; }
 .reader-paper .question textarea { resize: vertical; }
-.is-reading { overflow-x: clip; }
-
-@media (min-width: 768px) {
-  .is-reading #header { display: none; }
-  .is-reading #main { padding-top: 14px; padding-bottom: 80px; }
-  .reader-top { margin-bottom: 10px; }
-  .reader-paper.story { min-height: 0; padding: 18px clamp(22px, 5vw, 50px); }
-  .reader-paper.story h1 { margin: 0 0 10px; font-size: 1.5rem; }
-  .reader-paper.story .reader-rule { display: none; }
-  .reader-paper.story .page-image { margin-bottom: 8px; }
-  .reader-paper.story .page-image img { max-height: clamp(165px, calc(100svh - 320px), 490px); }
-  .reader-paper.story .story-text { margin: 0 auto; line-height: 1.5; text-align: center; }
-  .reader-paper.story .image-beside-text .story-text { margin: auto 0; text-align: start; }
-  .reader-controls { padding-top: 10px; }
+.is-reading {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
 }
+.is-reading #header { display: none; }
+.is-reading #main {
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 0;
+  padding-block: 8px;
+  overflow: auto;
+}
+.is-reading #nav {
+  position: static;
+  flex: none;
+  max-height: 44dvh;
+  overflow: auto;
+}
+.reader-top { margin-bottom: 8px; }
+.reader-title { overflow-wrap: anywhere; }
+.reader-story, .reader-ending { max-width: 32rem; }
+.reader-story {
+  display: grid;
+  grid-template-rows: auto minmax(7rem, 1fr) auto;
+  height: 100%;
+  max-height: 48rem;
+}
+.reader-paper.story {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  padding: clamp(16px, 4vw, 28px);
+}
+.reader-paper.story .page-layout { margin-block: auto; }
+.reader-paper.story .page-image { margin-bottom: 12px; }
+.reader-paper.story .image-below-text .page-image { margin: 12px 0 0; }
+.reader-paper.story .page-image img { max-height: min(54dvh, 31rem); }
+.reader-paper.story .story-text { margin: 0 auto; line-height: 1.5; text-align: center; }
+.reader-paper.story .image-beside-text .story-text { margin: auto 0; text-align: start; }
+.reader-page-count {
+  margin: 12px 0 0;
+  font-size: .875rem;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.reader-controls { padding-top: 8px; flex-wrap: wrap; }
+.reader-controls .primary { margin-inline-start: auto; }
+.reader-ending .reader-paper { min-height: 0; }

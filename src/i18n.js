@@ -1,5 +1,6 @@
 export const pt = {
   'Do activities': 'Fazer atividades', 'Current avatar': 'Avatar atual',
+  'Finish story': 'Concluir história', 'Story complete': 'História concluída', 'Book details': 'Detalhes do livro',
   'Pocket Dragon': 'Dragão de Bolso', 'Cloud Sheep': 'Ovelha das Nuvens', 'Mushroom Sprite': 'Duende Cogumelo',
   'Moon Moth': 'Mariposa Lunar', 'Space Fox': 'Raposa Espacial', 'Cassette Robot': 'Robô Cassete',
   'Mapmaker Owl': 'Coruja Cartógrafa', 'Moss Golem': 'Golem de Musgo', 'Pearl Nautilus': 'Náutilo Pérola',

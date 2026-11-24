@@ -26,6 +26,7 @@ const profile = () => state.profile;
 const book = () => state.books.find(b => b.id === state.bookId);
 const progress = b => profile()?.readingProgress.find(p => p.bookId === b.id);
 const currentPage = () => book().pages[state.page];
+const storyPages = b => b.pages.filter(page => page.type === 'story');
 const field = (label, input) => `<label>${t(label)}${input}</label>`;
 const option = (value, label, selected) => `<option value="${e(value)}" ${String(selected) === String(value) ? 'selected' : ''}>${e(t(label))}</option>`;
 const errorText = err => err instanceof Error ? err.message : String(err);
@@ -138,7 +139,7 @@ function libraryView() {
 }
 function detailView() {
   const b = book(), p = progress(b);
-  return `${backButton('detail-back')}<section class="book-detail"><img class="cover detail-cover" src="${e(b.cover)}" alt="${e(b.title)}" width="480" height="640"><div class="detail-copy"><span class="badge">${b.audiences.map(a => t({kids:'Kids',teens:'Teens',adults:'Adults'}[a])).join(' &middot; ')}</span><h1 class="serif">${e(b.title)}</h1><p class="muted">${e(b.subtitle)}</p><div class="detail-facts"><span>${t('Level')} ${b.readingLevel}</span><span>${b.minutes} ${t('minutes')}</span><span>${b.pages.length} ${t('Pages').toLocaleLowerCase()}</span></div><p class="description">${e(b.description)}</p><p class="small muted">${e(b.categories.join(' · '))} · ${e(b.seriesId)}</p><p><span class="badge">${statusLabel(p?.status)}</span></p><div class="actions">${button(p?.status === 'finished' ? 'Read again' : p ? 'Continue' : 'Start reading', p?.status === 'finished' ? 'restart' : 'start', 'primary')}${b.pages.some(page => page.type === 'activity') ? button('Do activities','start-activities') : ''}${p && p.status !== 'finished' ? button('Start again','restart') : ''}${p?.status === 'finished' ? button('View results','stats') : ''}</div><button class="text-button" data-action="add-collection" data-id="${b.id}">${icon('plus')}${t('Add to collection')}</button></div></section>`;
+  return `${backButton('detail-back')}<section class="book-detail"><img class="cover detail-cover" src="${e(b.cover)}" alt="${e(b.title)}" width="480" height="640"><div class="detail-copy"><span class="badge">${b.audiences.map(a => t({kids:'Kids',teens:'Teens',adults:'Adults'}[a])).join(' &middot; ')}</span><h1 class="serif">${e(b.title)}</h1><p class="muted">${e(b.subtitle)}</p><div class="detail-facts"><span>${t('Level')} ${b.readingLevel}</span><span>${b.minutes} ${t('minutes')}</span><span>${b.pages.length} ${t('Pages').toLocaleLowerCase()}</span></div><p class="description">${e(b.description)}</p><p class="small muted">${e(b.categories.join(' · '))} · ${e(b.seriesId)}</p><p><span class="badge">${statusLabel(p?.status)}</span>${p?.storyCompletedAt ? ` <span class="badge">${t('Story complete')}</span>` : ''}</p><div class="actions">${button(p?.status === 'finished' ? 'Read again' : p ? 'Continue' : 'Start reading', p?.status === 'finished' ? 'restart' : 'start', 'primary')}${b.pages.some(page => page.type === 'activity') ? button('Do activities','start-activities') : ''}${p && p.status !== 'finished' ? button('Start again','restart') : ''}${p?.status === 'finished' ? button('View results','stats') : ''}</div><button class="text-button" data-action="add-collection" data-id="${b.id}">${icon('plus')}${t('Add to collection')}</button></div></section>`;
 }
 function getAttempt(create = true) {
   const b = book(), page = currentPage(), run = progress(b)?.runId;
@@ -166,11 +167,21 @@ function activityView(page) {
 }
 function readerView() {
   const b = book();
+  const top = `<div class="reader-top">${backButton('reader-back')}<span class="reader-title">${e(b.title)}</span></div>`;
+  if (state.storyComplete) {
+    const next = b.pages[state.page + 1];
+    return `<section class="reader reader-ending">${top}<article tabindex="-1" class="reader-paper finished-page" aria-labelledby="story-complete-heading"><span class="large-check" aria-hidden="true">${icon('check')}</span><h1 id="story-complete-heading">${t('Story complete')}</h1><div class="actions">${next ? button(next.type === 'activity' ? 'Do activities' : 'Continue', 'after-story', 'primary') : ''}${button('Read again','reread-story')}${button('Book details','reader-back')}</div></article></section>`;
+  }
   if (state.finished) return `<section class="reader"><div class="reader-paper finished-page"><span class="large-check">${icon('check')}</span><h1>${t('Book finished')}</h1><p>${e(b.title)}</p><p class="muted">${t('A little further, one page at a time.')}</p><div class="actions">${button('View results','stats','primary')}${button('Back to library','library')}</div></div></section>`;
   const page = currentPage();
   let mode = profile().preferences.animation;
   if (mode === 'system') mode = 'book';
-  return `<section class="reader"><div class="reader-top">${backButton('reader-back')}<span class="reader-title">${e(b.title)}</span><span class="reader-page-count">${state.page+1} ${t('of')} ${b.pages.length}</span></div><article tabindex="-1" class="reader-paper ${page.type} ${state.pageDirection && mode !== 'none' ? `animate-${mode} ${state.pageDirection}` : ''}">${page.type === 'activity' ? activityView(page) : renderContentPage(page)}</article><div class="reader-controls"><button class="secondary" data-action="previous" ${state.page === 0 ? 'disabled' : ''}>${icon('back')}${t('Previous')}</button><button class="primary" data-action="next">${t(state.page === b.pages.length-1 ? 'Finish book' : 'Next')}${icon('arrow')}</button></div></section>`;
+  const isStory = page.type === 'story';
+  const numberedPages = isStory ? storyPages(b) : b.pages;
+  const count = `${t('Page')} ${numberedPages.indexOf(page) + 1}/${numberedPages.length}`;
+  const nextLabel = isStory && page === numberedPages.at(-1) ? 'Finish story' :
+    state.page === b.pages.length - 1 ? 'Finish book' : 'Next';
+  return `<section class="reader${isStory ? ' reader-story' : ''}">${top}<article tabindex="-1" aria-labelledby="reader-page-count" class="reader-paper ${page.type} ${state.pageDirection && mode !== 'none' ? `animate-${mode} ${state.pageDirection}` : ''}">${page.type === 'activity' ? activityView(page) : renderContentPage(page)}<p class="reader-page-count" id="reader-page-count">${count}</p></article><div class="reader-controls"><button class="secondary" data-action="previous" ${state.page === 0 ? 'disabled' : ''}>${icon('back')}${t('Previous')}</button><button class="primary" data-action="next">${t(nextLabel)}${icon('arrow')}</button></div></section>`;
 }
 function collectionsView() {
   return `<div class="narrow"><div class="section-heading page-title"><h1>${t('My Collections')}</h1>${button('New collection','new-collection','primary small')}</div>${profile().collections.length ? `<div class="shelf-list">${profile().collections.map(c=>`<button class="shelf-row" data-action="collection" data-id="${c.collectionId}"><span class="row"><span class="shelf-icon">${icon('collection')}</span><span><strong>${e(c.name)}</strong><br><span class="small muted">${c.bookIds.length} ${t('books')}</span></span></span>${icon('arrow')}</button>`).join('')}</div>` : `<section class="empty"><h2 class="serif">${t('A shelf of your own.')}</h2><p>${t('Keep the stories you want to come back to together.')}</p></section>`}</div>`;
@@ -261,7 +272,7 @@ async function startReading(restart = false, targetIndex = -1) {
   r.contentVersion = b.contentVersion;
   r.updatedAt=new Date().toISOString();
   const saving = persist();
-  go('reader', { finished:false, resumePrompt:true, pageDirection:null });
+  go('reader', { finished:false, storyComplete:false, resumePrompt:true, pageDirection:null });
   preloadStoryPages();
   await saving;
 }
@@ -271,11 +282,19 @@ function preloadStoryPages() {
     if (src) new Image().src = src;
   }
 }
-async function pageTurn(index) {
+async function pageTurn(index, completeStory = false) {
   const b = book(), r = progress(b);
-  if (index < 0 || (index === state.page && !state.finished)) return;
+  if (index < 0 || (index === state.page && !state.finished && !state.storyComplete && !completeStory)) return;
   const now = new Date().toISOString();
-  if (index >= b.pages.length) {
+  if (completeStory) {
+    r.storyCompletedAt ??= now;
+    state.storyComplete = true;
+    state.navOpen = false;
+    if (index === b.pages.length - 1) {
+      r.status = 'finished';
+      r.completedAt ??= now;
+    }
+  } else if (index >= b.pages.length) {
     r.status = 'finished';
     r.completedAt = now;
     state.finished = true;
@@ -284,16 +303,18 @@ async function pageTurn(index) {
     state.pageDirection = index < state.page ? 'backward' : 'forward';
     state.page = index;
     state.finished = false;
+    state.storyComplete = false;
     state.resumePrompt = true;
     r.pageId = currentPage().id;
   }
   r.updatedAt = now;
   const saving = persist();
   render();
+  main.scrollTop = 0;
   window.scrollTo({ top:0, behavior:'instant' });
   $('.reader-paper')?.focus({ preventScroll:true });
   state.pageDirection = null;
-  if (!state.finished) preloadStoryPages();
+  if (!state.finished && !state.storyComplete) preloadStoryPages();
   await saving;
 }
 async function setAnswer(questionId,value) { const a=getAttempt(); a.answers[questionId]=value; a.checked=false; a.updatedAt=new Date().toISOString(); await persist(); $$('.feedback').forEach(el=>el.remove()); }
@@ -352,7 +373,11 @@ const actions = {
   start:()=>startReading(),
   'start-activities':()=>startReading(false, book().pages.findIndex(page => page.type === 'activity')),
   restart:()=>confirmDialog('Start again',()=>startReading(true),'Start again'),
-  previous:()=>pageTurn(state.page-1), next:()=>pageTurn(state.page+1), page:el=>pageTurn(Number(el.dataset.index)),
+  previous:()=>pageTurn(state.page-1),
+  next:()=>currentPage() === storyPages(book()).at(-1) ? pageTurn(state.page,true) : pageTurn(state.page+1),
+  'after-story':()=>pageTurn(state.page+1),
+  'reread-story':()=>pageTurn(book().pages.findIndex(page => page.type === 'story')),
+  page:el=>pageTurn(Number(el.dataset.index)),
   'toggle-nav':()=>{state.navOpen=!state.navOpen;renderNav();},
   'resume-answers':()=>{state.resumePrompt=false;render();},
   retry:()=>{const a=getAttempt(); if (Object.keys(a.answers).length) confirmDialog('Start again',retryActivity,'Retry'); else return retryActivity();},

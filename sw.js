@@ -1,4 +1,4 @@
-const VERSION = 'reading-room-assets-v5-story-activities';
+const VERSION = 'reading-room-assets-v6-reader-layout';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './assets/icon.svg', './assets/icon-192.png', './assets/icon-512.png',
